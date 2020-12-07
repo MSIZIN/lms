@@ -8,7 +8,9 @@ import play.api.mvc._
 class HomeController @Inject() (cc: ControllerComponents) extends AbstractController(cc) {
 
   def index = Action { request =>
-    Ok("Добро пожаловать в систему управления обучением!\nВведите логин и пароль или зарегистрируйтесь.")
+    Ok("""
+        |Добро пожаловать в систему управления обучением!
+        |Введите email и пароль или зарегистрируйтесь по верификационному коду.""".stripMargin)
   }
 
 }
