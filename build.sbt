@@ -22,5 +22,10 @@ scalacOptions := List(
 
 coverageEnabled in (Test, compile) := true
 
-libraryDependencies += guice
-libraryDependencies += "org.scalatestplus.play" %% "scalatestplus-play" % "5.0.0" % Test
+libraryDependencies ++= Seq(
+  guice,
+  jdbc,
+  "org.postgresql" % "postgresql" % "42.2.10",
+  "org.playframework.anorm" %% "anorm" % "2.6.5",
+  "org.scalatestplus.play" %% "scalatestplus-play" % "5.0.0" % Test
+)

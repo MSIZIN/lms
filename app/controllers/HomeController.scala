@@ -10,7 +10,8 @@ class HomeController @Inject() (cc: ControllerComponents) extends AbstractContro
   def index = Action { request =>
     Ok("""
         |Добро пожаловать в систему управления обучением!
-        |Введите email и пароль или зарегистрируйтесь по верификационному коду.""".stripMargin)
+        |Введите email и пароль или зарегистрируйтесь по верификационному коду.
+        |""".stripMargin)
   }
 
 }

@@ -1,2 +1,2 @@
-GET        /        controllers.HomeController.index
-
+GET        /                              controllers.HomeController.index
+GET        /login/:email/:password        controllers.AuthController.login(email: String, password: String)
