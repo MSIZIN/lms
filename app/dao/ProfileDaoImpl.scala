@@ -15,6 +15,9 @@ class ProfileDaoImpl @Inject() (dbapi: DBApi) extends ProfileDao {
 
   override def findProfileByEmail(email: Email): Option[Profile] = findVerCodeByEmail(email).flatMap(findProfileByVerCode)
 
+  override def updatePersonStringFieldByEmail(fieldName: String, fieldValue: String, email: Email): Boolean =
+    updatePersonStringFieldByVerCode(fieldName, fieldValue, findVerCodeByEmail(email).get)
+
   private def findVerCodeByEmail(email: Email): Option[UUID] =
     db.withConnection { implicit connection =>
         SQL"SELECT * FROM account WHERE email = ${email.value}".as(AccountTable.accountParser.singleOpt)
@@ -68,5 +71,24 @@ class ProfileDaoImpl @Inject() (dbapi: DBApi) extends ProfileDao {
 
         Profile(person, educationalInfo)
       }
+
+  // fixme: Не разобрался как вставить переменную fieldName с названием поля в запрос, чтобы не возникала ошибка. Пока приходится хардкодить
+  private def updatePersonStringFieldByVerCode(fieldName: String, fieldValue: String, verificationCode: UUID): Boolean =
+    db.withConnection { implicit connection =>
+      val query = fieldName match {
+        case "phone" => SQL"UPDATE person SET phone = $fieldValue where verification_code = CAST(${verificationCode.toString} AS UUID)"
+        case "home_town" =>
+          SQL"UPDATE person SET home_town = $fieldValue where verification_code = CAST(${verificationCode.toString} AS UUID)"
+        case "info"    => SQL"UPDATE person SET info = $fieldValue where verification_code = CAST(${verificationCode.toString} AS UUID)"
+        case "vk_link" => SQL"UPDATE person SET vk_link = $fieldValue where verification_code = CAST(${verificationCode.toString} AS UUID)"
+        case "facebook_link" =>
+          SQL"UPDATE person SET facebook_link = $fieldValue where verification_code = CAST(${verificationCode.toString} AS UUID)"
+        case "linkedin_link" =>
+          SQL"UPDATE person SET linkedin_link = $fieldValue where verification_code = CAST(${verificationCode.toString} AS UUID)"
+        case "instagram_link" =>
+          SQL"UPDATE person SET instagram_link = $fieldValue where verification_code = CAST(${verificationCode.toString} AS UUID)"
+      }
+      query.execute()
+    }
 
 }

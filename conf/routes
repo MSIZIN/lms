@@ -1,7 +1,14 @@
-GET        /                       controllers.HomeController.index
+GET        /                                controllers.HomeController.index
 
-GET        /login                  controllers.AuthController.login(email: String, password: String)
-GET        /signup                 controllers.AuthController.signup(vercode: String, email: String, password: String)
+GET        /login                           controllers.AuthController.login(email: String, password: String)
+GET        /signup                          controllers.AuthController.signup(vercode: String, email: String, password: String)
 
-GET        /profile                controllers.ProfileController.profile
-GET        /profile/another        controllers.ProfileController.anotherProfile(email: String)
+GET        /profile                         controllers.ProfileController.profile
+GET        /profile/another                 controllers.ProfileController.anotherProfile(email: String)
+GET        /profile/update/phone            controllers.ProfileController.updatePhone(phone: String)
+GET        /profile/update/town             controllers.ProfileController.updateHomeTown(town: String)
+GET        /profile/update/info             controllers.ProfileController.updatePersonInfo(info: String)
+GET        /profile/update/vk               controllers.ProfileController.updateVkLink(link: String)
+GET        /profile/update/facebook         controllers.ProfileController.updateFacebookLink(link: String)
+GET        /profile/update/linkedin         controllers.ProfileController.updateLinkedinLink(link: String)
+GET        /profile/update/instagram        controllers.ProfileController.updateInstagramLink(link: String)

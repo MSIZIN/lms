@@ -1,9 +1,9 @@
 package domain.service
 
 import dao.ProfileDao
-import domain.model.{EducationInfo, EducationalGroup, Email, Person, Profile}
-import domain.service.ProfileServiceImpl.{decorateAnotherProfile, decorateProfile}
-import domain.service.messages.{ProfileNotFound, ProfileRequest, ProfileResponse, ProfileSuccess}
+import domain.model._
+import domain.service.ProfileServiceImpl.{decorateAnotherProfile, decorateProfile, isRightLinkFormat, toRussianPhoneFormat}
+import domain.service.messages._
 import javax.inject._
 
 @Singleton
@@ -20,6 +20,37 @@ class ProfileServiceImpl @Inject() (profileDao: ProfileDao) extends ProfileServi
       case Some(profile) => ProfileSuccess(decorateAnotherProfile(profile, request.email))
       case None          => ProfileNotFound
     }
+
+  override def updatePhone(request: UpdatePhoneRequest): UpdateResponse =
+    if ("9[0-9]{9,9}".r matches request.phone) { // пользователь должен вводить телефон в формате 9.........
+      profileDao.updatePersonStringFieldByEmail("phone", toRussianPhoneFormat(request.phone), request.email)
+      UpdateSuccess
+    } else
+      WrongPhoneFormat
+
+  override def updateHomeTown(request: UpdateHomeTownRequest): UpdateResponse = {
+    profileDao.updatePersonStringFieldByEmail("home_town", request.homeTown, request.email)
+    UpdateSuccess
+  }
+
+  override def updatePersonInfo(request: UpdatePersonInfoRequest): UpdateResponse = {
+    profileDao.updatePersonStringFieldByEmail("info", request.info, request.email)
+    UpdateSuccess
+  }
+
+  override def updateLink(request: UpdateLinkRequest): UpdateResponse = {
+    val (link, socialNetwork, requiredPrefixLink, fieldName) = request.link match {
+      case VkLink(link)        => (link, "Vk", "https://vk.com/", "vk_link")
+      case FacebookLink(link)  => (link, "Facebook", "https://facebook.com/", "facebook_link")
+      case LinkedinLink(link)  => (link, "Linkedin", "https://linkedin.com/", "linkedin_link")
+      case InstagramLink(link) => (link, "Instagram", "https://instagram.com/", "instagram_link")
+    }
+    if (isRightLinkFormat(link, requiredPrefixLink)) {
+      profileDao.updatePersonStringFieldByEmail(fieldName, link, request.email)
+      UpdateSuccess
+    } else
+      WrongLinkFormat(socialNetwork, requiredPrefixLink)
+  }
 
 }
 object ProfileServiceImpl {
@@ -88,4 +119,8 @@ object ProfileServiceImpl {
       |Группа: ${educationalGroup.name}
       |Номер курса: ${educationalGroup.courseNumber}""".stripMargin
 
+  private def toRussianPhoneFormat(phone: String): String =
+    s"+7 ${phone.take(3) + " " + phone.substring(3, 6) + " " + phone.takeRight(4)}"
+
+  private def isRightLinkFormat(link: String, requiredLinkPrefix: String): Boolean = s"$requiredLinkPrefix.*".r matches link
 }

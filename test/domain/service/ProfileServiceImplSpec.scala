@@ -1,7 +1,7 @@
 package domain.service
 
 import dao.ProfileDao
-import domain.model.{Account, EducationInfo, EducationalGroup, Email, Password, Person, Profile}
+import domain.model._
 import domain.service.messages._
 import org.scalatestplus.play.PlaySpec
 
@@ -40,6 +40,7 @@ class ProfileServiceImplSpec extends PlaySpec {
 
     override def findProfileByEmail(email: Email): Option[Profile] = emailToProfile.get(email)
 
+    override def updatePersonStringFieldByEmail(fieldName: String, fieldValue: String, email: Email): Boolean = true
   }
 
   val profileService = new ProfileServiceImpl(profileDaoMock)
@@ -128,6 +129,68 @@ class ProfileServiceImplSpec extends PlaySpec {
 
     "not return decorated profile of unknown email" in {
       profileService.profile(ProfileRequest(Email("oops@email.com"))) must equal(ProfileNotFound)
+    }
+
+    "update phone" in {
+      profileService.updatePhone(UpdatePhoneRequest("9876543210", Email("teacher@email.com"))) must equal(UpdateSuccess)
+    }
+
+    "not update phone in the wrong format" in {
+      profileService.updatePhone(UpdatePhoneRequest("876543210", Email("teacher@email.com"))) must equal(WrongPhoneFormat)
+    }
+
+    "update home town" in {
+      profileService.updateHomeTown(UpdateHomeTownRequest("Moscow", Email("teacher@email.com"))) must equal(UpdateSuccess)
+    }
+
+    "update person info" in {
+      profileService.updatePersonInfo(UpdatePersonInfoRequest("I am teacher.", Email("teacher@email.com"))) must equal(UpdateSuccess)
+    }
+
+    "update vk link" in {
+      profileService.updateLink(UpdateLinkRequest(VkLink("https://vk.com/teacher"), Email("teacher@email.com"))) must equal(UpdateSuccess)
+    }
+
+    "not update vk link in the wrong format" in {
+      profileService.updateLink(UpdateLinkRequest(VkLink("https://instagram.com/teacher"), Email("teacher@email.com"))) must equal(
+        WrongLinkFormat("Vk", "https://vk.com/")
+      )
+    }
+
+    "update facebook link" in {
+      profileService.updateLink(UpdateLinkRequest(FacebookLink("https://facebook.com/teacher"), Email("teacher@email.com"))) must equal(
+        UpdateSuccess
+      )
+    }
+
+    "not update facebook link in the wrong format" in {
+      profileService.updateLink(UpdateLinkRequest(FacebookLink("https://oops.com/teacher"), Email("teacher@email.com"))) must equal(
+        WrongLinkFormat("Facebook", "https://facebook.com/")
+      )
+    }
+
+    "update linkedin link" in {
+      profileService.updateLink(UpdateLinkRequest(LinkedinLink("https://linkedin.com/teacher"), Email("teacher@email.com"))) must equal(
+        UpdateSuccess
+      )
+    }
+
+    "not update linkedin link in the wrong format" in {
+      profileService.updateLink(UpdateLinkRequest(LinkedinLink("https://oops.com/teacher"), Email("teacher@email.com"))) must equal(
+        WrongLinkFormat("Linkedin", "https://linkedin.com/")
+      )
+    }
+
+    "update instagram link" in {
+      profileService.updateLink(UpdateLinkRequest(InstagramLink("https://instagram.com/teacher"), Email("teacher@email.com"))) must equal(
+        UpdateSuccess
+      )
+    }
+
+    "not update instagram link in the wrong format" in {
+      profileService.updateLink(UpdateLinkRequest(InstagramLink("https://oops.com/teacher"), Email("teacher@email.com"))) must equal(
+        WrongLinkFormat("Instagram", "https://instagram.com/")
+      )
     }
 
   }
