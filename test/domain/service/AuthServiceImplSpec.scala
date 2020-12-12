@@ -4,9 +4,10 @@ import java.util.UUID
 
 import dao.AuthDao
 import domain.model.{Account, Email, Password, Person}
+import domain.service.messages.{AccountExists, EmailExists, EmailNotFound, InsecurePassword, LoginRequest, LoginSuccess, PasswordIncorrect, SignupRequest, SignupSuccess, UserNotFound}
 import org.scalatestplus.play.PlaySpec
 
-class AuthServiceSpec extends PlaySpec {
+class AuthServiceImplSpec extends PlaySpec {
 
   val acc1 = Account(Email("test1@email.com"), Password("pasw1"))
   val acc2 = Account(Email("test2@email.com"), Password("pasw2"))
@@ -21,21 +22,24 @@ class AuthServiceSpec extends PlaySpec {
 
   val accDaoMock: AuthDao = new AuthDao {
 
-    private val emailToAcc = Map(
-      Email("test1@email.com") -> acc1,
-      Email("test2@email.com") -> acc2
-    )
+    private val emailToAcc =
+      Map(
+        Email("test1@email.com") -> acc1,
+        Email("test2@email.com") -> acc2
+      )
 
-    private val vercodeToAcc = Map(
-      uuid1 -> acc1,
-      uuid2 -> acc2
-    )
+    private val vercodeToAcc =
+      Map(
+        uuid1 -> acc1,
+        uuid2 -> acc2
+      )
 
-    private val vercodeToPerson = Map(
-      uuid1 -> person1,
-      uuid2 -> person2,
-      uuid3 -> person3
-    )
+    private val vercodeToPerson =
+      Map(
+        uuid1 -> person1,
+        uuid2 -> person2,
+        uuid3 -> person3
+      )
 
     override def findAccByEmail(email: Email): Option[Account] = emailToAcc.get(email)
 

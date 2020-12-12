@@ -4,6 +4,7 @@ import java.util.UUID
 
 import domain.model.{Account, Email, Password}
 import domain.service._
+import domain.service.messages.{AccountExists, EmailExists, EmailNotFound, InsecurePassword, LoginRequest, LoginSuccess, PasswordIncorrect, SignupRequest, SignupSuccess, UserNotFound}
 import javax.inject._
 import play.api.mvc._
 

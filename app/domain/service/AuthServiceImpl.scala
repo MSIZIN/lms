@@ -2,6 +2,7 @@ package domain.service
 
 import dao.AuthDao
 import domain.model.{Email, Password, SessionId}
+import domain.service.messages.{AccountExists, Credentials, EmailExists, EmailNotFound, InsecurePassword, LoginRequest, LoginResponse, LoginSuccess, PasswordIncorrect, SessionNotFound, SignupRequest, SignupResponse, SignupSuccess, UserNotFound, WhoamiResponse}
 import javax.inject._
 
 @Singleton
@@ -39,10 +40,16 @@ class AuthServiceImpl @Inject() (authDao: AuthDao) extends AuthService {
       case None => UserNotFound
     }
 
+  override def whoami(sessionId: SessionId): WhoamiResponse =
+    if (sessions.contains(sessionId))
+      Credentials(sessionId, sessions(sessionId))
+    else
+      SessionNotFound(sessionId)
+
 }
 object AuthServiceImpl {
 
-  def isPasswordSecure(password: Password): Boolean =
+  private def isPasswordSecure(password: Password): Boolean =
     "(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{6,}".r.matches(password.value)
 
 }

@@ -1,4 +1,4 @@
-package domain.service
+package domain.service.messages
 
 import java.util.UUID
 

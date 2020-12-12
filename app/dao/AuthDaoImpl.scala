@@ -48,7 +48,7 @@ class AuthDaoImpl @Inject() (dbapi: DBApi) extends AuthDao {
         )
       )
 
-  def insertAcc(verificationCode: UUID, account: Account): Boolean =
+  override def insertAcc(verificationCode: UUID, account: Account): Boolean =
     db.withConnection { implicit connection =>
       SQL"INSERT INTO account (person_verification_code, email, password) VALUES (CAST(${verificationCode.toString} AS UUID), ${account.email.value}, ${account.password.value})"
         .execute()
