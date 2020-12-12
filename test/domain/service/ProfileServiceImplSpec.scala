@@ -51,18 +51,17 @@ class ProfileServiceImplSpec extends PlaySpec {
         case ProfileSuccess(content) =>
           content must include(
             """Личная информация:
-              |ФИО: Хрусталёв, Иван, Николаевич
+              |ФИО: Хрусталёв Иван Николаевич
               |E-mail: teacher@email.com
-              |Телефон: +7 988 737 7846(можно изменить)
-              |Родной город: Калуга(можно изменить)
-              |Информация о себе: Proin risus. Praesent lectus. Vestibulum quam sapien, varius ut, blandit non, interdum in, ante.(можно изменить)
+              |Телефон: +7 988 737 7846 (можно изменить)
+              |Родной город: Калуга (можно изменить)
+              |Информация о себе: Proin risus. Praesent lectus. Vestibulum quam sapien, varius ut, blandit non, interdum in, ante. (можно изменить)
               |
               |Ссылки на профили в социальных сетях:
-              |VK: https://vk.com/id119489714(можно изменить)
-              |Facebook: отстутсвует (можно добавить)
-              |LinkedIn: отстутсвует (можно добавить)
-              |Instagram: https://instagram.com/id859213456(можно изменить)
-              |""".stripMargin
+              |VK: https://vk.com/id119489714 (можно изменить)
+              |Facebook: отсутствует (можно добавить)
+              |LinkedIn: отсутствует (можно добавить)
+              |Instagram: https://instagram.com/id859213456 (можно изменить)""".stripMargin
           )
         case other => sys.error(s"Unexpected profile result: $other")
       }
@@ -72,30 +71,56 @@ class ProfileServiceImplSpec extends PlaySpec {
       profileService.profile(ProfileRequest(Email("student@email.com"))) match {
         case ProfileSuccess(content) =>
           content must include(
-            """
-            |Личная информация:
-            |ФИО: Федотова, Ирина, Антоновна
-            |E-mail: student@email.com
-            |Телефон: отстутсвует (можно добавить)
-            |Родной город: отстутсвует (можно добавить)
-            |Информация о себе: отстутсвует (можно добавить)
-            |
-            |Ссылки на профили в социальных сетях:
-            |VK: отстутсвует (можно добавить)
-            |Facebook: отстутсвует (можно добавить)
-            |LinkedIn: отстутсвует (можно добавить)
-            |Instagram: отстутсвует (можно добавить)
-            |
-            |Информация о получаемом образовании:
-            |Факультет: ИНКБИСТ
-            |Группа: 551
-            |Номер курса: 3
-            |
-            |Год поступления: 2018
-            |Степень: специалист
-            |Форма обучения: очная
-            |Основа обучения: бюджетная
-            |""".stripMargin
+            """Личная информация:
+              |ФИО: Федотова Ирина Антоновна
+              |E-mail: student@email.com
+              |Телефон: отсутствует (можно добавить)
+              |Родной город: отсутствует (можно добавить)
+              |Информация о себе: отсутствует (можно добавить)
+              |
+              |Ссылки на профили в социальных сетях:
+              |VK: отсутствует (можно добавить)
+              |Facebook: отсутствует (можно добавить)
+              |LinkedIn: отсутствует (можно добавить)
+              |Instagram: отсутствует (можно добавить)
+              |
+              |Информация о получаемом образовании:
+              |Факультет: ИНКБИСТ
+              |Группа: 551
+              |Номер курса: 3
+              |Год поступления: 2018
+              |Степень: специалист
+              |Форма обучения: очная
+              |Основа обучения: бюджетная""".stripMargin
+          )
+        case other => sys.error(s"Unexpected profile result: $other")
+      }
+    }
+
+    "return decorated profile of another student" in {
+      profileService.anotherProfile(ProfileRequest(Email("student@email.com"))) match {
+        case ProfileSuccess(content) =>
+          content must include(
+            """Личная информация:
+              |ФИО: Федотова Ирина Антоновна
+              |E-mail: student@email.com
+              |Телефон: отсутствует
+              |Родной город: отсутствует
+              |Информация о себе: отсутствует
+              |
+              |Ссылки на профили в социальных сетях:
+              |VK: отсутствует
+              |Facebook: отсутствует
+              |LinkedIn: отсутствует
+              |Instagram: отсутствует
+              |
+              |Информация о получаемом образовании:
+              |Факультет: ИНКБИСТ
+              |Группа: 551
+              |Номер курса: 3
+              |Год поступления: 2018
+              |Степень: специалист
+              |Форма обучения: очная""".stripMargin
           )
         case other => sys.error(s"Unexpected profile result: $other")
       }

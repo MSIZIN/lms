@@ -1,8 +1,8 @@
 package domain.service
 
 import dao.ProfileDao
-import domain.model.{EducationInfo, EducationalGroup, Email, Profile}
-import domain.service.ProfileServiceImpl.decorateProfile
+import domain.model.{EducationInfo, EducationalGroup, Email, Person, Profile}
+import domain.service.ProfileServiceImpl.{decorateAnotherProfile, decorateProfile}
 import domain.service.messages.{ProfileNotFound, ProfileRequest, ProfileResponse, ProfileSuccess}
 import javax.inject._
 
@@ -15,43 +15,77 @@ class ProfileServiceImpl @Inject() (profileDao: ProfileDao) extends ProfileServi
       case None          => ProfileNotFound
     }
 
+  override def anotherProfile(request: ProfileRequest): ProfileResponse =
+    profileDao.findProfileByEmail(request.email) match {
+      case Some(profile) => ProfileSuccess(decorateAnotherProfile(profile, request.email))
+      case None          => ProfileNotFound
+    }
+
 }
 object ProfileServiceImpl {
 
   private def decorateProfile(profile: Profile, email: Email): String =
-    s"""
-      |Личная информация:
-      |ФИО: ${profile.person.lastName}, ${profile.person.firstName}, ${profile.person.middleName}
-      |E-mail: ${email.value}
-      |Телефон: ${decorateOptField(profile.person.phone)}
-      |Родной город: ${decorateOptField(profile.person.homeTown)}
-      |Информация о себе: ${decorateOptField(profile.person.info)}
+    s"""${decoratePerson(profile.person, email)}
       |
-      |Ссылки на профили в социальных сетях:
-      |VK: ${decorateOptField(profile.person.vkLink)}
-      |Facebook: ${decorateOptField(profile.person.facebookLink)}
-      |LinkedIn: ${decorateOptField(profile.person.linkedinLink)}
-      |Instagram: ${decorateOptField(profile.person.instagramLink)}
-      |${profile.educationInfo.fold("")(decorateEducationInfo)}
-      |""".stripMargin
+      |${profile.educationInfo.fold("")(decorateEducationInfo)}""".stripMargin
+
+  private def decorateAnotherProfile(profile: Profile, email: Email): String =
+    s"""${decorateAnotherPerson(profile.person, email)}
+       |
+       |${profile.educationInfo.fold("")(decorateAnotherEducationInfo)}""".stripMargin
+
+  private def decoratePerson(person: Person, email: Email): String =
+    s"""Личная информация:
+       |ФИО: ${person.lastName} ${person.firstName} ${person.middleName}
+       |E-mail: ${email.value}
+       |Телефон: ${decorateOptField(person.phone)}
+       |Родной город: ${decorateOptField(person.homeTown)}
+       |Информация о себе: ${decorateOptField(person.info)}
+       |
+       |Ссылки на профили в социальных сетях:
+       |VK: ${decorateOptField(person.vkLink)}
+       |Facebook: ${decorateOptField(person.facebookLink)}
+       |LinkedIn: ${decorateOptField(person.linkedinLink)}
+       |Instagram: ${decorateOptField(person.instagramLink)}""".stripMargin
+
+  private def decorateAnotherPerson(person: Person, email: Email): String =
+    s"""Личная информация:
+       |ФИО: ${person.lastName} ${person.firstName} ${person.middleName}
+       |E-mail: ${email.value}
+       |Телефон: ${decorateAnotherOptField(person.phone)}
+       |Родной город: ${decorateAnotherOptField(person.homeTown)}
+       |Информация о себе: ${decorateAnotherOptField(person.info)}
+       |
+       |Ссылки на профили в социальных сетях:
+       |VK: ${decorateAnotherOptField(person.vkLink)}
+       |Facebook: ${decorateAnotherOptField(person.facebookLink)}
+       |LinkedIn: ${decorateAnotherOptField(person.linkedinLink)}
+       |Instagram: ${decorateAnotherOptField(person.instagramLink)}""".stripMargin
 
   private def decorateOptField(field: Option[String]): String =
-    s"${field.fold("отстутсвует (можно добавить)")(field => field + "(можно изменить)")}"
+    s"${field.fold("отсутствует (можно добавить)")(field => field + " (можно изменить)")}"
+
+  private def decorateAnotherOptField(field: Option[String]): String =
+    s"${field.fold("отсутствует")(identity)}"
 
   private def decorateEducationInfo(educationInfo: EducationInfo): String =
-    s"""
-      |Информация о получаемом образовании:${decorateEducationalGroup(educationInfo.group)}
+    s"""Информация о получаемом образовании:
+      |${decorateEducationalGroup(educationInfo.group)}
       |Год поступления: ${educationInfo.admissionYear}
       |Степень: ${educationInfo.degree}
       |Форма обучения: ${educationInfo.educationalForm}
-      |Основа обучения: ${educationInfo.educationalBasis}
-      |""".stripMargin
+      |Основа обучения: ${educationInfo.educationalBasis}""".stripMargin
+
+  private def decorateAnotherEducationInfo(educationInfo: EducationInfo): String =
+    s"""Информация о получаемом образовании:
+       |${decorateEducationalGroup(educationInfo.group)}
+       |Год поступления: ${educationInfo.admissionYear}
+       |Степень: ${educationInfo.degree}
+       |Форма обучения: ${educationInfo.educationalForm}""".stripMargin
 
   private def decorateEducationalGroup(educationalGroup: EducationalGroup): String =
-    s"""
-      |Факультет: ${educationalGroup.department}
+    s"""Факультет: ${educationalGroup.department}
       |Группа: ${educationalGroup.name}
-      |Номер курса: ${educationalGroup.courseNumber}
-      |""".stripMargin
+      |Номер курса: ${educationalGroup.courseNumber}""".stripMargin
 
 }

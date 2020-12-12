@@ -1,6 +1,6 @@
 package controllers
 
-import domain.model.SessionId
+import domain.model.{Email, SessionId}
 import domain.service._
 import domain.service.messages._
 import javax.inject._
@@ -20,6 +20,13 @@ class ProfileController @Inject() (authService: AuthService, profileService: Pro
             |""".stripMargin)
         case ProfileNotFound => InternalServerError("Произошла ошибка на сервере при получении вашего профиля.")
       }
+    }
+  }
+
+  def anotherProfile(email: String): Action[AnyContent] = Action { request =>
+    profileService.anotherProfile(ProfileRequest(Email(email))) match {
+      case ProfileSuccess(content) => Ok(content)
+      case ProfileNotFound         => BadRequest("Пользователь с таким email не найден.")
     }
   }
 
