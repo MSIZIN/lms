@@ -3,7 +3,8 @@ package dao.table
 import java.util.UUID
 
 import anorm.SqlParser.get
-import anorm.{RowParser, ~}
+import anorm.{RowParser, SqlStringInterpolation, ~}
+import play.api.db.Database
 
 final case class EducationInfoTable(
   id: Option[Long] = None,
@@ -15,7 +16,8 @@ final case class EducationInfoTable(
   educationalBasis: String
 )
 object EducationInfoTable {
-  val educationInfoParser: RowParser[EducationInfoTable] = {
+
+  private val educationInfoParser: RowParser[EducationInfoTable] = {
     get[Option[Long]]("education_info.id") ~
       get[UUID]("education_info.student_id") ~
       get[Long]("education_info.group_id") ~
@@ -27,4 +29,10 @@ object EducationInfoTable {
         EducationInfoTable(id, studentId, groupId, admissionYear, degree, educationalForm, educationalBasis)
     }
   }
+
+  def findEducInfoTableByVerCode(verificationCode: UUID)(implicit db: Database): Option[EducationInfoTable] =
+    db.withConnection { implicit connection =>
+      SQL"SELECT * FROM education_info where student_id = CAST(${verificationCode.toString} AS UUID)".as(educationInfoParser.singleOpt)
+    }
+
 }

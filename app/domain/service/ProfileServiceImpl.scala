@@ -23,18 +23,18 @@ class ProfileServiceImpl @Inject() (profileDao: ProfileDao) extends ProfileServi
 
   override def updatePhone(request: UpdatePhoneRequest): UpdateResponse =
     if ("9[0-9]{9,9}".r matches request.phone) { // пользователь должен вводить телефон в формате 9.........
-      profileDao.updatePersonStringFieldByEmail("phone", toRussianPhoneFormat(request.phone), request.email)
+      profileDao.updatePersonFieldByEmail("phone", toRussianPhoneFormat(request.phone), request.email)
       UpdateSuccess
     } else
       WrongPhoneFormat
 
   override def updateHomeTown(request: UpdateHomeTownRequest): UpdateResponse = {
-    profileDao.updatePersonStringFieldByEmail("home_town", request.homeTown, request.email)
+    profileDao.updatePersonFieldByEmail("home_town", request.homeTown, request.email)
     UpdateSuccess
   }
 
   override def updatePersonInfo(request: UpdatePersonInfoRequest): UpdateResponse = {
-    profileDao.updatePersonStringFieldByEmail("info", request.info, request.email)
+    profileDao.updatePersonFieldByEmail("info", request.info, request.email)
     UpdateSuccess
   }
 
@@ -46,7 +46,7 @@ class ProfileServiceImpl @Inject() (profileDao: ProfileDao) extends ProfileServi
       case InstagramLink(link) => (link, "Instagram", "https://instagram.com/", "instagram_link")
     }
     if (isRightLinkFormat(link, requiredPrefixLink)) {
-      profileDao.updatePersonStringFieldByEmail(fieldName, link, request.email)
+      profileDao.updatePersonFieldByEmail(fieldName, link, request.email)
       UpdateSuccess
     } else
       WrongLinkFormat(socialNetwork, requiredPrefixLink)

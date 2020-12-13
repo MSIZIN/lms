@@ -40,7 +40,7 @@ class ProfileServiceImplSpec extends PlaySpec {
 
     override def findProfileByEmail(email: Email): Option[Profile] = emailToProfile.get(email)
 
-    override def updatePersonStringFieldByEmail(fieldName: String, fieldValue: String, email: Email): Boolean = true
+    override def updatePersonFieldByEmail(fieldName: String, fieldValue: String, email: Email): Boolean = true
   }
 
   val profileService = new ProfileServiceImpl(profileDaoMock)
