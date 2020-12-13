@@ -2,6 +2,7 @@ GET        /                                controllers.HomeController.index
 
 GET        /login                           controllers.AuthController.login(email: String, password: String)
 GET        /signup                          controllers.AuthController.signup(vercode: String, email: String, password: String)
+GET        /update/password                 controllers.AuthController.updatePassword(oldPassword: String, newPassword: String)
 
 GET        /profile                         controllers.ProfileController.profile
 GET        /profile/another                 controllers.ProfileController.anotherProfile(email: String)

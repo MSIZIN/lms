@@ -2,7 +2,7 @@ package domain.service
 
 import dao.AuthDao
 import domain.model.{Email, Password, SessionId}
-import domain.service.messages.{AccountExists, Credentials, EmailExists, EmailNotFound, InsecurePassword, LoginRequest, LoginResponse, LoginSuccess, PasswordIncorrect, SessionNotFound, SignupRequest, SignupResponse, SignupSuccess, UserNotFound, WhoamiResponse}
+import domain.service.messages._
 import javax.inject._
 
 @Singleton
@@ -15,11 +15,10 @@ class AuthServiceImpl @Inject() (authDao: AuthDao) extends AuthService {
   override def login(request: LoginRequest): LoginResponse = {
     val reqAcc = request.account
     authDao.findAccByEmail(reqAcc.email) match {
-      case Some(acc) if reqAcc.password == acc.password => {
+      case Some(acc) if reqAcc.password == acc.password =>
         val sessionId = SessionId(java.util.UUID.randomUUID().toString)
         sessions += (sessionId -> acc.email)
         LoginSuccess(sessionId)
-      }
       case Some(_) => PasswordIncorrect
       case None    => EmailNotFound
     }
@@ -32,10 +31,9 @@ class AuthServiceImpl @Inject() (authDao: AuthDao) extends AuthService {
           case Some(_)                                                        => AccountExists
           case None if authDao.findAccByEmail(request.account.email).nonEmpty => EmailExists
           case None if !isPasswordSecure(request.account.password)            => InsecurePassword
-          case None => {
+          case None =>
             authDao.insertAcc(request.vercode, request.account)
             SignupSuccess
-          }
         }
       case None => UserNotFound
     }
@@ -46,6 +44,15 @@ class AuthServiceImpl @Inject() (authDao: AuthDao) extends AuthService {
     else
       SessionNotFound(sessionId)
 
+  override def updatePassword(request: UpdatePasswordRequest): UpdatePasswordResponse =
+    authDao.findAccByEmail(request.account.email) match {
+      case Some(acc) if acc.password != request.account.password => WrongOldPassword
+      case Some(_) if !isPasswordSecure(request.newPassword)     => InsecureNewPassword
+      case Some(_) =>
+        authDao.updatePasswordByEmail(request.newPassword, request.account.email)
+        UpdatePasswordSuccess
+      case None => AccountNotFound
+    }
 }
 object AuthServiceImpl {
 

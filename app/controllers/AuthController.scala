@@ -2,9 +2,10 @@ package controllers
 
 import java.util.UUID
 
+import controllers.ControllerHelpers._
 import domain.model.{Account, Email, Password}
 import domain.service._
-import domain.service.messages.{AccountExists, EmailExists, EmailNotFound, InsecurePassword, LoginRequest, LoginSuccess, PasswordIncorrect, SignupRequest, SignupSuccess, UserNotFound}
+import domain.service.messages._
 import javax.inject._
 import play.api.mvc._
 
@@ -30,6 +31,20 @@ class AuthController @Inject() (authService: AuthService, cc: ControllerComponen
           |- длина не менее 6 символов
           |- содержит цифры и буквы(латиница) в верхнем и нижнем регистре
           |""".stripMargin)
+    }
+  }
+
+  def updatePassword(oldPassword: String, newPassword: String): Action[AnyContent] = Action { request =>
+    withAuthenticatedUser(request, authService) { cred =>
+      authService.updatePassword(UpdatePasswordRequest(Account(cred.email, Password(oldPassword)), Password(newPassword))) match {
+        case UpdatePasswordSuccess => Ok("Пароль успешно изменён.")
+        case AccountNotFound       => InternalServerError("Произошла ошибка на сервере. Ваш аккаунт не найден")
+        case WrongOldPassword      => BadRequest("Старый пароль введён неверно.")
+        case InsecureNewPassword   => BadRequest("""Новый пароль недостаточно безопасный, он должен соотвествовать следующим условиям:
+            |- длина не менее 6 символов
+            |- содержит цифры и буквы(латиница) в верхнем и нижнем регистре
+            |""".stripMargin)
+      }
     }
   }
 

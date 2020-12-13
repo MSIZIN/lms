@@ -2,7 +2,7 @@ package domain.service.messages
 
 import java.util.UUID
 
-import domain.model.{Account, Email, SessionId}
+import domain.model.{Account, Email, Password, SessionId}
 
 final case class SignupRequest(vercode: UUID, account: Account)
 
@@ -23,3 +23,11 @@ case object PasswordIncorrect extends LoginResponse
 sealed trait WhoamiResponse
 final case class Credentials(sessionId: SessionId, email: Email) extends WhoamiResponse
 final case class SessionNotFound(sessionId: SessionId) extends WhoamiResponse
+
+final case class UpdatePasswordRequest(account: Account, newPassword: Password)
+
+sealed trait UpdatePasswordResponse
+case object UpdatePasswordSuccess extends UpdatePasswordResponse
+case object AccountNotFound extends UpdatePasswordResponse
+case object WrongOldPassword extends UpdatePasswordResponse
+case object InsecureNewPassword extends UpdatePasswordResponse

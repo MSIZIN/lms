@@ -4,7 +4,7 @@ import java.util.UUID
 
 import anorm.SqlStringInterpolation
 import dao.table.{AccountTable, EducationInfoTable, EducationalGroupTable, PersonTable}
-import domain.model.{EducationInfo, EducationalGroup, Email, Person, Profile}
+import domain.model.{EducationInfo, EducationalGroup, Email, Password, Person, Profile}
 import javax.inject._
 import play.api.db.DBApi
 
@@ -62,14 +62,14 @@ class ProfileDaoImpl @Inject() (dbapi: DBApi) extends ProfileDao {
             queryRes.instagramLink
           )
 
-        val educationalInfo =
+        val educationInfo =
           if (queryRes.position == "преподаватель")
             None
           else {
             findEducationInfoByVerCode(queryRes.verificationCode)
           }
 
-        Profile(person, educationalInfo)
+        Profile(person, educationInfo)
       }
 
   // fixme: Не разобрался как вставить переменную fieldName с названием поля в запрос, чтобы не возникала ошибка. Пока приходится хардкодить

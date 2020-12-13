@@ -4,21 +4,21 @@ import java.util.UUID
 
 import dao.AuthDao
 import domain.model.{Account, Email, Password, Person}
-import domain.service.messages.{AccountExists, EmailExists, EmailNotFound, InsecurePassword, LoginRequest, LoginSuccess, PasswordIncorrect, SignupRequest, SignupSuccess, UserNotFound}
+import domain.service.messages._
 import org.scalatestplus.play.PlaySpec
 
 class AuthServiceImplSpec extends PlaySpec {
 
-  val acc1 = Account(Email("test1@email.com"), Password("pasw1"))
-  val acc2 = Account(Email("test2@email.com"), Password("pasw2"))
+  val acc1: Account = Account(Email("test1@email.com"), Password("pasw1"))
+  val acc2: Account = Account(Email("test2@email.com"), Password("pasw2"))
 
-  val uuid1 = UUID.fromString("2563d25c-851b-4d2b-a9e7-5946035119f3")
-  val uuid2 = UUID.fromString("edd8b362-215f-4abf-994a-d3fa9fc92f73")
-  val uuid3 = UUID.fromString("ef9c5278-1afa-4779-901f-14ec32939f74")
+  val uuid1: UUID = UUID.fromString("2563d25c-851b-4d2b-a9e7-5946035119f3")
+  val uuid2: UUID = UUID.fromString("edd8b362-215f-4abf-994a-d3fa9fc92f73")
+  val uuid3: UUID = UUID.fromString("ef9c5278-1afa-4779-901f-14ec32939f74")
 
-  val person1 = Person("Елизавета", "Балтинова", "Игоревна")
-  val person2 = Person("Иван", "Хрусталёв", "Николаевич")
-  val person3 = Person("Николай", "Дубровский", "Фёдорович")
+  val person1: Person = Person("Елизавета", "Балтинова", "Игоревна")
+  val person2: Person = Person("Иван", "Хрусталёв", "Николаевич")
+  val person3: Person = Person("Николай", "Дубровский", "Фёдорович")
 
   val accDaoMock: AuthDao = new AuthDao {
 
@@ -48,6 +48,8 @@ class AuthServiceImplSpec extends PlaySpec {
     override def findPersonByVerCode(verificationCode: UUID): Option[Person] = vercodeToPerson.get(verificationCode)
 
     override def insertAcc(verificationCode: UUID, account: Account): Boolean = true
+
+    override def updatePasswordByEmail(password: Password, email: Email): Boolean = true
 
   }
 
@@ -94,6 +96,30 @@ class AuthServiceImplSpec extends PlaySpec {
 
     "not signup insecure password" in {
       authService.signup(SignupRequest(uuid3, Account(Email("test3@email.com"), Password("1234")))) must equal(InsecurePassword)
+    }
+
+    "updatePassword method" must {
+
+      "update password" in {
+        authService.updatePassword(UpdatePasswordRequest(acc1, Password("newPassw1"))) must equal(UpdatePasswordSuccess)
+      }
+
+      "not update password of unknown email" in {
+        authService.updatePassword(UpdatePasswordRequest(Account(Email("oops@email.com"), Password("1234")), Password("newPassw2"))) must equal(
+          AccountNotFound
+        )
+      }
+
+      "not update password without right old password" in {
+        authService.updatePassword(UpdatePasswordRequest(acc1.copy(password = Password("oopsPassw")), Password("newPassw3"))) must equal(
+          WrongOldPassword
+        )
+      }
+
+      "not update password with insecure new password" in {
+        authService.updatePassword(UpdatePasswordRequest(acc2, Password("1234567890"))) must equal(InsecureNewPassword)
+      }
+
     }
 
   }

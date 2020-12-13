@@ -3,7 +3,7 @@ package dao
 import java.util.UUID
 
 import com.google.inject.ImplementedBy
-import domain.model.{Email, Profile}
+import domain.model.{Email, Password, Profile}
 
 @ImplementedBy(classOf[ProfileDaoImpl])
 trait ProfileDao {

@@ -1,5 +1,6 @@
 package controllers
 
+import controllers.ControllerHelpers._
 import domain.model._
 import domain.service._
 import domain.service.messages._
@@ -11,7 +12,7 @@ class ProfileController @Inject() (authService: AuthService, profileService: Pro
     extends AbstractController(cc) {
 
   def profile: Action[AnyContent] = Action { request =>
-    withAuthenticatedUser(request) { creds =>
+    withAuthenticatedUser(request, authService) { creds =>
       profileService.profile(ProfileRequest(creds.email)) match {
         case ProfileSuccess(content) =>
           Ok(s"""Ваш профиль:
@@ -31,7 +32,7 @@ class ProfileController @Inject() (authService: AuthService, profileService: Pro
   }
 
   def updatePhone(phone: String): Action[AnyContent] = Action { request =>
-    withAuthenticatedUser(request) { creds =>
+    withAuthenticatedUser(request, authService) { creds =>
       profileService.updatePhone(UpdatePhoneRequest(phone, creds.email)) match {
         case UpdateSuccess    => Ok("Телефон успешно изменён.")
         case WrongPhoneFormat => BadRequest("Формат введёного номера должен быть таким: 9.........")
@@ -40,7 +41,7 @@ class ProfileController @Inject() (authService: AuthService, profileService: Pro
   }
 
   def updateHomeTown(town: String): Action[AnyContent] = Action { request =>
-    withAuthenticatedUser(request) { creds =>
+    withAuthenticatedUser(request, authService) { creds =>
       profileService.updateHomeTown(UpdateHomeTownRequest(town, creds.email)) match {
         case UpdateSuccess => Ok("Родной город успешно изменён.")
       }
@@ -48,7 +49,7 @@ class ProfileController @Inject() (authService: AuthService, profileService: Pro
   }
 
   def updatePersonInfo(info: String): Action[AnyContent] = Action { request =>
-    withAuthenticatedUser(request) { creds =>
+    withAuthenticatedUser(request, authService) { creds =>
       profileService.updatePersonInfo(UpdatePersonInfoRequest(info, creds.email)) match {
         case UpdateSuccess => Ok("Информация о себе успешно изменена.")
       }
@@ -64,7 +65,7 @@ class ProfileController @Inject() (authService: AuthService, profileService: Pro
   def updateInstagramLink(link: String): Action[AnyContent] = updateLink(InstagramLink(link))
 
   private def updateLink(link: SocialNetworkLink): Action[AnyContent] = Action { request =>
-    withAuthenticatedUser(request) { creds =>
+    withAuthenticatedUser(request, authService) { creds =>
       profileService.updateLink(UpdateLinkRequest(link, creds.email)) match {
         case UpdateSuccess => Ok(s"Ссылка успешно изменена.")
         case WrongLinkFormat(socialNetwork, requiredLinkPrefix) =>
@@ -72,15 +73,5 @@ class ProfileController @Inject() (authService: AuthService, profileService: Pro
       }
     }
   }
-
-  private def withAuthenticatedUser(request: Request[Any])(func: Credentials => Result): Result =
-    request.cookies.get("Authentication") match {
-      case Some(sesid) =>
-        authService.whoami(SessionId(sesid.value)) match {
-          case creds: Credentials => func(creds)
-          case _: SessionNotFound => Redirect(Call("GET", "/"))
-        }
-      case None => Redirect(Call("GET", "/"))
-    }
 
 }

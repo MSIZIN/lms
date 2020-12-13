@@ -54,4 +54,9 @@ class AuthDaoImpl @Inject() (dbapi: DBApi) extends AuthDao {
         .execute()
     }
 
+  override def updatePasswordByEmail(password: Password, email: Email): Boolean =
+    db.withConnection { implicit connection =>
+      SQL"UPDATE account SET password = ${password.value} where email = ${email.value}".execute()
+    }
+
 }

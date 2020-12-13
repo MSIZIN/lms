@@ -1,6 +1,6 @@
 package domain.model
 
-case class EducationInfo(
+final case class EducationInfo(
   group: EducationalGroup,
   admissionYear: Int,
   degree: String,

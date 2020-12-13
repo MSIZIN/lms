@@ -1,6 +1,6 @@
 package domain.model
 
-case class Profile(
+final case class Profile(
   person: Person,
   educationInfo: Option[EducationInfo]
 )
