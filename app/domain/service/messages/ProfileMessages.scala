@@ -1,6 +1,6 @@
 package domain.service.messages
 
-import domain.model.{Email, SocialNetworkLink}
+import domain.model.{Email, SocialNetworkLink, Student}
 
 final case class ProfileRequest(email: Email)
 
@@ -17,3 +17,9 @@ sealed trait UpdateResponse
 case object UpdateSuccess extends UpdateResponse
 case object WrongPhoneFormat extends UpdateResponse
 final case class WrongLinkFormat(socialNetwork: String, requiredLinkPrefix: String) extends UpdateResponse
+
+final case class GroupmatesRequest(email: Email)
+
+sealed trait GroupmatesResponse
+final case class GroupmatesSuccess(students: List[Student]) extends GroupmatesResponse
+case object UserIsNotStudent extends GroupmatesResponse

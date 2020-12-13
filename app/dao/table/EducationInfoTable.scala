@@ -35,4 +35,9 @@ object EducationInfoTable {
       SQL"SELECT * FROM education_info where student_id = CAST(${verificationCode.toString} AS UUID)".as(educationInfoParser.singleOpt)
     }
 
+  def findEducInfoTablesByGroupId(groupId: Long)(implicit db: Database): List[EducationInfoTable] =
+    db.withConnection { implicit connection =>
+      SQL"SELECT * FROM education_info WHERE group_id = $groupId".as(educationInfoParser.*)
+    }
+
 }

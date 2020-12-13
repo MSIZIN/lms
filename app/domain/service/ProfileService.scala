@@ -11,4 +11,5 @@ trait ProfileService {
   def updateHomeTown(request: UpdateHomeTownRequest): UpdateResponse
   def updatePersonInfo(request: UpdatePersonInfoRequest): UpdateResponse
   def updateLink(request: UpdateLinkRequest): UpdateResponse
+  def groupmates(request: GroupmatesRequest): GroupmatesResponse
 }

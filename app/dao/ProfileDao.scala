@@ -7,4 +7,5 @@ import domain.model.{Email, Profile, Student}
 trait ProfileDao {
   def findProfileByEmail(email: Email): Option[Profile]
   def updatePersonFieldByEmail(fieldName: String, fieldValue: String, email: Email): Boolean
+  def findGroupmatesByEmail(email: Email): Option[List[Student]]
 }

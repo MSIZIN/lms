@@ -6,7 +6,7 @@ import dao.table.AccountTable._
 import dao.table.EducationInfoTable._
 import dao.table.EducationalGroupTable._
 import dao.table.PersonTable._
-import domain.model.{EducationInfo, EducationalGroup, Email, Person, Profile}
+import domain.model.{EducationInfo, EducationalGroup, Email, Person, Profile, Student}
 import javax.inject._
 import play.api.db.{DBApi, Database}
 
@@ -26,12 +26,31 @@ class ProfileDaoImpl @Inject() (dbapi: DBApi) extends ProfileDao {
     updatePersonTableFieldByVerCode(fieldName, fieldValue, verificationCode)
   }
 
+  override def findGroupmatesByEmail(email: Email): Option[List[Student]] =
+    for {
+      vercode <- findVerCodeByEmail(email)
+      _ <- findStudentByVerCode(vercode)
+      groupId <- findGroupIdByVerCode(vercode)
+      educInfoTables = findEducInfoTablesByGroupId(groupId)
+      groupmates = educInfoTables
+        .map(educInfoTable => educInfoTable.studentId)
+        .flatMap(findStudentByVerCode)
+    } yield groupmates
+
+  private def findGroupIdByVerCode(verificationCode: UUID): Option[Long] =
+    findEducInfoTableByVerCode(verificationCode).map(_.groupId)
+
   private def findVerCodeByEmail(email: Email): Option[UUID] =
     findAccountTableByEmail(email).map(_.personVerificationCode)
 
   private def findEducationalGroupById(id: Long): Option[EducationalGroup] =
     findEducGroupTableById(id).map(educGroupTable =>
       EducationalGroup(educGroupTable.name, educGroupTable.department, educGroupTable.courseNumber)
+    )
+
+  private def findStudentByVerCode(verificationCode: UUID): Option[Student] =
+    findPersonTableByVerCode(verificationCode).map(personTable =>
+      Student(personTable.firstName, personTable.lastName, personTable.middleName)
     )
 
   private def findEducationInfoByVerCode(verificationCode: UUID): Option[EducationInfo] =

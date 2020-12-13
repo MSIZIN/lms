@@ -3,7 +3,7 @@ package domain.service
 import java.util.UUID
 
 import dao.AuthDao
-import domain.model.{Account, Email, Password, Person}
+import domain.model.{Account, Email, Password, Person, Student}
 import domain.service.messages._
 import org.scalatestplus.play.PlaySpec
 
@@ -98,28 +98,28 @@ class AuthServiceImplSpec extends PlaySpec {
       authService.signup(SignupRequest(uuid3, Account(Email("test3@email.com"), Password("1234")))) must equal(InsecurePassword)
     }
 
-    "updatePassword method" must {
+  }
 
-      "update password" in {
-        authService.updatePassword(UpdatePasswordRequest(acc1, Password("newPassw1"))) must equal(UpdatePasswordSuccess)
-      }
+  "updatePassword method" must {
 
-      "not update password of unknown email" in {
-        authService.updatePassword(UpdatePasswordRequest(Account(Email("oops@email.com"), Password("1234")), Password("newPassw2"))) must equal(
-          AccountNotFound
-        )
-      }
+    "update password" in {
+      authService.updatePassword(UpdatePasswordRequest(acc1, Password("newPassw1"))) must equal(UpdatePasswordSuccess)
+    }
 
-      "not update password without right old password" in {
-        authService.updatePassword(UpdatePasswordRequest(acc1.copy(password = Password("oopsPassw")), Password("newPassw3"))) must equal(
-          WrongOldPassword
-        )
-      }
+    "not update password of unknown email" in {
+      authService.updatePassword(UpdatePasswordRequest(Account(Email("oops@email.com"), Password("1234")), Password("newPassw2"))) must equal(
+        AccountNotFound
+      )
+    }
 
-      "not update password with insecure new password" in {
-        authService.updatePassword(UpdatePasswordRequest(acc2, Password("1234567890"))) must equal(InsecureNewPassword)
-      }
+    "not update password without right old password" in {
+      authService.updatePassword(UpdatePasswordRequest(acc1.copy(password = Password("oopsPassw")), Password("newPassw3"))) must equal(
+        WrongOldPassword
+      )
+    }
 
+    "not update password with insecure new password" in {
+      authService.updatePassword(UpdatePasswordRequest(acc2, Password("1234567890"))) must equal(InsecureNewPassword)
     }
 
   }

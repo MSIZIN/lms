@@ -41,6 +41,13 @@ class ProfileServiceImplSpec extends PlaySpec {
     override def findProfileByEmail(email: Email): Option[Profile] = emailToProfile.get(email)
 
     override def updatePersonFieldByEmail(fieldName: String, fieldValue: String, email: Email): Boolean = true
+
+    override def findGroupmatesByEmail(email: Email): Option[List[Student]] =
+      if (email == Email("student@email.com"))
+        Some(List(Student(student.person.firstName, student.person.lastName, student.person.middleName)))
+      else
+        None
+
   }
 
   val profileService = new ProfileServiceImpl(profileDaoMock)
@@ -131,6 +138,10 @@ class ProfileServiceImplSpec extends PlaySpec {
       profileService.profile(ProfileRequest(Email("oops@email.com"))) must equal(ProfileNotFound)
     }
 
+  }
+
+  "update methods" must {
+
     "update phone" in {
       profileService.updatePhone(UpdatePhoneRequest("9876543210", Email("teacher@email.com"))) must equal(UpdateSuccess)
     }
@@ -191,6 +202,20 @@ class ProfileServiceImplSpec extends PlaySpec {
       profileService.updateLink(UpdateLinkRequest(InstagramLink("https://oops.com/teacher"), Email("teacher@email.com"))) must equal(
         WrongLinkFormat("Instagram", "https://instagram.com/")
       )
+    }
+
+  }
+
+  "groupmates method" must {
+
+    "return groupmates of student" in {
+      profileService.groupmates(GroupmatesRequest(Email("student@email.com"))) must equal(
+        GroupmatesSuccess(List(Student(student.person.firstName, student.person.lastName, student.person.middleName)))
+      )
+    }
+
+    "not return groupmates of teacher" in {
+      profileService.groupmates(GroupmatesRequest(Email("teacher@email.com"))) must equal(UserIsNotStudent)
     }
 
   }

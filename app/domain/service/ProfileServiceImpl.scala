@@ -52,6 +52,12 @@ class ProfileServiceImpl @Inject() (profileDao: ProfileDao) extends ProfileServi
       WrongLinkFormat(socialNetwork, requiredPrefixLink)
   }
 
+  override def groupmates(request: GroupmatesRequest): GroupmatesResponse =
+    profileDao.findGroupmatesByEmail(request.email) match {
+      case Some(students) => GroupmatesSuccess(students)
+      case None           => UserIsNotStudent
+    }
+
 }
 object ProfileServiceImpl {
 
