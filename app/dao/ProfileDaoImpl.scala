@@ -29,12 +29,12 @@ class ProfileDaoImpl @Inject() (dbapi: DBApi) extends ProfileDao {
   override def findGroupmatesByEmail(email: Email): Option[List[Student]] =
     for {
       vercode <- findVerCodeByEmail(email)
-      _ <- findStudentByVerCode(vercode)
       groupId <- findGroupIdByVerCode(vercode)
       educInfoTables = findEducInfoTablesByGroupId(groupId)
       groupmates = educInfoTables
         .map(educInfoTable => educInfoTable.studentId)
-        .flatMap(findStudentByVerCode)
+        .flatMap(findPersonTableByVerCode)
+        .map(personTable => Student(personTable.firstName, personTable.lastName, personTable.middleName))
     } yield groupmates
 
   private def findGroupIdByVerCode(verificationCode: UUID): Option[Long] =
@@ -46,11 +46,6 @@ class ProfileDaoImpl @Inject() (dbapi: DBApi) extends ProfileDao {
   private def findEducationalGroupById(id: Long): Option[EducationalGroup] =
     findEducGroupTableById(id).map(educGroupTable =>
       EducationalGroup(educGroupTable.name, educGroupTable.department, educGroupTable.courseNumber)
-    )
-
-  private def findStudentByVerCode(verificationCode: UUID): Option[Student] =
-    findPersonTableByVerCode(verificationCode).map(personTable =>
-      Student(personTable.firstName, personTable.lastName, personTable.middleName)
     )
 
   private def findEducationInfoByVerCode(verificationCode: UUID): Option[EducationInfo] =

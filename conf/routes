@@ -14,3 +14,5 @@ GET        /profile/update/facebook         controllers.ProfileController.update
 GET        /profile/update/linkedin         controllers.ProfileController.updateLinkedinLink(link: String)
 GET        /profile/update/instagram        controllers.ProfileController.updateInstagramLink(link: String)
 GET        /groupmates                      controllers.ProfileController.groupmates
+
+GET        /course/list                     controllers.CourseController.courseList

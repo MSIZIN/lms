@@ -25,9 +25,11 @@ class ProfileController @Inject() (authService: AuthService, profileService: Pro
   }
 
   def anotherProfile(email: String): Action[AnyContent] = Action { request =>
-    profileService.anotherProfile(ProfileRequest(Email(email))) match {
-      case ProfileSuccess(content) => Ok(content)
-      case ProfileNotFound         => BadRequest("Пользователь с таким email не найден.")
+    withAuthenticatedUser(request, authService) { creds =>
+      profileService.anotherProfile(ProfileRequest(Email(email))) match {
+        case ProfileSuccess(content) => Ok(content)
+        case ProfileNotFound         => BadRequest("Пользователь с таким email не найден.")
+      }
     }
   }
 
