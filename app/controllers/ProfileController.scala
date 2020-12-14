@@ -67,16 +67,8 @@ class ProfileController @Inject() (authService: AuthService, profileService: Pro
   def groupmates: Action[AnyContent] = Action { request =>
     withAuthenticatedUser(request, authService) { creds =>
       profileService.groupmates(GroupmatesRequest(creds.email)) match {
-        case GroupmatesSuccess(students) =>
-          Ok(
-            "Студенты из вашей группы:\n" +
-              students
-                .map(student => (student.lastName, student.firstName, student.middleName))
-                .sorted
-                .map(fio => s"${fio._1} ${fio._2} ${fio._3}")
-                .mkString("\n")
-          )
-        case UserIsNotStudent => BadRequest("Одногруппники могут быть только у студента")
+        case GroupmatesSuccess(content) => Ok(content)
+        case UserIsNotStudent           => BadRequest("Одногруппники могут быть только у студента")
       }
     }
   }

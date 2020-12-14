@@ -210,7 +210,7 @@ class ProfileServiceImplSpec extends PlaySpec {
 
     "return groupmates of student" in {
       profileService.groupmates(GroupmatesRequest(Email("student@email.com"))) must equal(
-        GroupmatesSuccess(List(Student(student.person.firstName, student.person.lastName, student.person.middleName)))
+        GroupmatesSuccess("Студенты из вашей группы:\n1. Федотова Ирина Антоновна")
       )
     }
 

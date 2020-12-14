@@ -21,5 +21,5 @@ final case class WrongLinkFormat(socialNetwork: String, requiredLinkPrefix: Stri
 final case class GroupmatesRequest(email: Email)
 
 sealed trait GroupmatesResponse
-final case class GroupmatesSuccess(students: List[Student]) extends GroupmatesResponse
+final case class GroupmatesSuccess(content: String) extends GroupmatesResponse
 case object UserIsNotStudent extends GroupmatesResponse

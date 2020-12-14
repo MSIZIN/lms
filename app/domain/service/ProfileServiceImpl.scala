@@ -2,7 +2,7 @@ package domain.service
 
 import dao.ProfileDao
 import domain.model._
-import domain.service.ProfileServiceImpl.{decorateAnotherProfile, decorateProfile, isRightLinkFormat, toRussianPhoneFormat}
+import domain.service.ProfileServiceImpl.{decorateAnotherProfile, decorateGroupmates, decorateProfile, isRightLinkFormat, toRussianPhoneFormat}
 import domain.service.messages._
 import javax.inject._
 
@@ -54,7 +54,7 @@ class ProfileServiceImpl @Inject() (profileDao: ProfileDao) extends ProfileServi
 
   override def groupmates(request: GroupmatesRequest): GroupmatesResponse =
     profileDao.findGroupmatesByEmail(request.email) match {
-      case Some(students) => GroupmatesSuccess(students)
+      case Some(students) => GroupmatesSuccess(decorateGroupmates(students))
       case None           => UserIsNotStudent
     }
 
@@ -129,4 +129,13 @@ object ProfileServiceImpl {
     s"+7 ${phone.take(3) + " " + phone.substring(3, 6) + " " + phone.takeRight(4)}"
 
   private def isRightLinkFormat(link: String, requiredLinkPrefix: String): Boolean = s"$requiredLinkPrefix.*".r matches link
+
+  private def decorateGroupmates(students: List[Student]): String =
+    "Студенты из вашей группы:\n" +
+      students
+        .map(student => (student.lastName, student.firstName, student.middleName))
+        .sorted
+        .zipWithIndex
+        .map { case (fio, idx) => s"${idx + 1}. ${fio._1} ${fio._2} ${fio._3}" }
+        .mkString("\n")
 }
