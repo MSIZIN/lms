@@ -12,17 +12,21 @@ final case class TeachersCoursesTable(
 )
 object TeachersCoursesTable {
 
-  private val groupsCoursesParser: RowParser[TeachersCoursesTable] = {
+  private val teachersCoursesParser: RowParser[TeachersCoursesTable] = {
     get[UUID]("teachers_courses.teacher_id") ~
       get[Long]("teachers_courses.course_id") map {
-      case teacherId ~ courseId =>
-        TeachersCoursesTable(teacherId, courseId)
+      case teacherId ~ courseId => TeachersCoursesTable(teacherId, courseId)
     }
   }
 
   def findTeachersCoursesTablesByVerCode(verificationCode: UUID)(implicit db: Database): List[TeachersCoursesTable] =
     db.withConnection { implicit connection =>
-      SQL"SELECT * FROM teachers_courses where teacher_id = CAST(${verificationCode.toString} AS UUID)".as(groupsCoursesParser.*)
+      SQL"SELECT * FROM teachers_courses where teacher_id = CAST(${verificationCode.toString} AS UUID)".as(teachersCoursesParser.*)
+    }
+
+  def findTeachersCoursesTablesByCourseId(courseId: Long)(implicit db: Database): List[TeachersCoursesTable] =
+    db.withConnection { implicit connection =>
+      SQL"SELECT * FROM teachers_courses where course_id = $courseId".as(teachersCoursesParser.*)
     }
 
 }

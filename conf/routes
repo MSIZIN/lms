@@ -16,3 +16,4 @@ GET        /profile/update/instagram        controllers.ProfileController.update
 GET        /groupmates                      controllers.ProfileController.groupmates
 
 GET        /course/list                     controllers.CourseController.courseList
+GET        /course                          controllers.CourseController.course(id: Long)

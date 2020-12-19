@@ -13,8 +13,7 @@ object GroupsCoursesTable {
   private val groupsCoursesParser: RowParser[GroupsCoursesTable] = {
     get[Long]("groups_courses.group_id") ~
       get[Long]("groups_courses.course_id") map {
-      case groupId ~ courseId =>
-        GroupsCoursesTable(groupId, courseId)
+      case groupId ~ courseId => GroupsCoursesTable(groupId, courseId)
     }
   }
 

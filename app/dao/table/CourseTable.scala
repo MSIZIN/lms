@@ -15,8 +15,7 @@ object CourseTable {
     get[Option[Long]]("course.id") ~
       get[String]("course.name") ~
       get[String]("course.description") map {
-      case id ~ name ~ description =>
-        CourseTable(id, name, description)
+      case id ~ name ~ description => CourseTable(id, name, description)
     }
   }
 

@@ -1,7 +1,6 @@
 package controllers
 
 import controllers.ControllerHelpers._
-import domain.model._
 import domain.service._
 import domain.service.messages._
 import javax.inject._
@@ -17,6 +16,15 @@ class CourseController @Inject() (authService: AuthService, courseService: Cours
         case StudentCourseListSuccess(content) => Ok(content)
         case TeacherCourseListSuccess(content) => Ok(content)
         case CourseListFailure                 => InternalServerError("Произошла ошибка на сервере при попытке получить список ваших курсов")
+      }
+    }
+  }
+
+  def course(id: Long): Action[AnyContent] = Action { request =>
+    withAuthenticatedUser(request, authService) { creds =>
+      courseService.course(CourseRequest(id, creds.email)) match {
+        case CourseSuccess(content) => Ok(content)
+        case CourseFailure          => BadRequest("Не удалось найти курс с таким id")
       }
     }
   }

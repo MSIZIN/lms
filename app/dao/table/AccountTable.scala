@@ -20,8 +20,7 @@ object AccountTable {
       get[UUID]("account.person_verification_code") ~
       get[String]("account.email") ~
       get[String]("account.password") map {
-      case id ~ personVerificationCode ~ email ~ password =>
-        AccountTable(id, personVerificationCode, email, password)
+      case id ~ personVerificationCode ~ email ~ password => AccountTable(id, personVerificationCode, email, password)
     }
   }
 

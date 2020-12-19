@@ -17,8 +17,7 @@ object EducationalGroupTable {
       get[String]("educational_group.name") ~
       get[String]("educational_group.department") ~
       get[Int]("educational_group.course_number") map {
-      case id ~ name ~ department ~ courseNumber =>
-        EducationalGroupTable(id, name, department, courseNumber)
+      case id ~ name ~ department ~ courseNumber => EducationalGroupTable(id, name, department, courseNumber)
     }
   }
 

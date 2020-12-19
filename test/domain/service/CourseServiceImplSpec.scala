@@ -1,7 +1,9 @@
 package domain.service
 
+import java.time.LocalDate
+
 import dao.CourseDao
-import domain.model.{Course, Email}
+import domain.model._
 import domain.service.messages._
 import org.scalatestplus.play.PlaySpec
 
@@ -20,6 +22,28 @@ class CourseServiceImplSpec extends PlaySpec {
       case email if email == teacherEmail => Some(courses)
       case _                              => None
     }
+
+    override def findCourseInfoById(id: Long, email: Email): Option[CourseInfo] =
+      if (id == 1) {
+        Some(
+          CourseInfo(
+            "Основы прокрастинации",
+            "Описание курса добавится на следующей неделе.",
+            List(Teacher("Елизавета", "Балтинова", "Игоревна"), Teacher("Николай", "Дубровский", "Фёдорович")),
+            List(Student("Галина", "Епископова", "Семёновна")),
+            List(
+              CourseMaterial(
+                5,
+                "Материал по первому занятию",
+                "Кто-то из преподавателей добавит этот материл, как только пройдёт первое занятие",
+                LocalDate.of(2020, 10, 2)
+              )
+            ),
+            List(HomeTask(4, "В последний момент", LocalDate.of(2020, 10, 15), LocalDate.of(2020, 12, 1), "Нужно прислать любой текст."))
+          )
+        )
+      } else
+        None
 
   }
 
@@ -45,6 +69,46 @@ class CourseServiceImplSpec extends PlaySpec {
 
     "not return list of courses of unknown email" in {
       courseService.courseList(CourseListRequest(Email("oops@email.com"))) must equal(CourseListFailure)
+    }
+
+  }
+
+  "course method" must {
+
+    "return course info of known course id" in {
+      courseService.course(CourseRequest(1, studentEmail)) must equal(
+        CourseSuccess(
+          """Информация о курсе:
+            |
+            |Название: Основы прокрастинации
+            |Описание: Описание курса добавится на следующей неделе.
+            |
+            |Преподаватели:
+            |1. Балтинова Елизавета Игоревна
+            |2. Дубровский Николай Фёдорович
+            |
+            |Доверенные лица:
+            |1. Епископова Галина Семёновна
+            |
+            |Материалы курса:
+            |
+            |id: 5
+            |Имя материала: Материал по первому занятию
+            |Содержимое: Кто-то из преподавателей добавит этот материл, как только пройдёт первое занятие
+            |Дата добавления: 02.10.2020
+            |
+            |Домашние задания:
+            |
+            |id: 4
+            |Название: В последний момент
+            |Интервал времени сдачи: 15.10.2020 - 01.12.2020
+            |Описание: Нужно прислать любой текст.""".stripMargin
+        )
+      )
+    }
+
+    "not return course info of unknown course id" in {
+      courseService.course(CourseRequest(404, studentEmail)) must equal(CourseFailure)
     }
 
   }
