@@ -17,3 +17,6 @@ GET        /groupmates                      controllers.ProfileController.groupm
 
 GET        /course/list                     controllers.CourseController.courseList
 GET        /course                          controllers.CourseController.course(id: Long)
+GET        /course/material/add             controllers.CourseController.addCourseMaterial(id: Long, name: String, content: String)
+GET        /course/material/delete          controllers.CourseController.deleteCourseMaterial(id: Long)
+GET        /course/material/update          controllers.CourseController.updateCourseMaterial(id: Long, name: Option[String], content: Option[String])

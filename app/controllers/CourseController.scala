@@ -29,4 +29,34 @@ class CourseController @Inject() (authService: AuthService, courseService: Cours
     }
   }
 
+  def addCourseMaterial(id: Long, name: String, content: String): Action[AnyContent] = Action { request =>
+    withAuthenticatedUser(request, authService) { creds =>
+      courseService.addCourseMaterial(AddCourseMaterialRequest(id, name, content, creds.email)) match {
+        case AddCourseMaterialSuccess => Ok("Материал курса успешно добавлен")
+        case NotEnoughRightsToAddCourseMaterial =>
+          BadRequest("Чтобы добавлять материалы курса, нужно быть либо преподавателем этого курса либо доверенным лицом")
+      }
+    }
+  }
+
+  def deleteCourseMaterial(id: Long): Action[AnyContent] = Action { request =>
+    withAuthenticatedUser(request, authService) { creds =>
+      courseService.deleteCourseMaterial(DeleteCourseMaterialRequest(id, creds.email)) match {
+        case DeleteCourseMaterialSuccess => Ok("Материал курса успешно удалён")
+        case NotEnoughRightsToDeleteCourseMaterial =>
+          BadRequest("Чтобы удалять материалы курса, нужно быть либо преподавателем этого курса либо доверенным лицом")
+      }
+    }
+  }
+
+  def updateCourseMaterial(id: Long, name: Option[String], content: Option[String]): Action[AnyContent] = Action { request =>
+    withAuthenticatedUser(request, authService) { creds =>
+      courseService.updateCourseMaterial(UpdateCourseMaterialRequest(id, name, content, creds.email)) match {
+        case UpdateCourseMaterialSuccess => Ok("Материал курса успешно изменён")
+        case NotEnoughRightsToUpdateCourseMaterial =>
+          BadRequest("Чтобы модифицировать материалы курса, нужно быть либо преподавателем этого курса либо доверенным лицом")
+      }
+    }
+  }
+
 }

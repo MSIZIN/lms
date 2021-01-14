@@ -31,6 +31,28 @@ class CourseDaoImpl @Inject() (dbapi: DBApi) extends CourseDao {
       case None    => false
     }
 
+  override def isTeacherOfCourse(courseId: Long, email: Email): Boolean =
+    (
+      for {
+        vercode <- findVerCodeByEmail(email)
+        teacherTable <- findTeachersCoursesTablesByCourseId(courseId).find(table => table.teacherId == vercode)
+      } yield teacherTable
+    ) match {
+      case Some(_) => true
+      case None    => false
+    }
+
+  override def isGroupLeaderOfCourse(courseId: Long, email: Email): Boolean =
+    (
+      for {
+        vercode <- findVerCodeByEmail(email)
+        studentTable <- findGroupLeadersCourseTablesByCourseId(courseId).find(table => table.studentId == vercode)
+      } yield studentTable
+    ) match {
+      case Some(_) => true
+      case None    => false
+    }
+
   override def findCoursesByEmail(email: Email): Option[List[Course]] =
     for {
       vercode <- findVerCodeByEmail(email)
@@ -63,8 +85,20 @@ class CourseDaoImpl @Inject() (dbapi: DBApi) extends CourseDao {
       homeTasks
     )
 
-  private def findVerCodeByEmail(email: Email): Option[UUID] =
-    findAccountTableByEmail(email).map(_.personVerificationCode)
+  override def findCourseIdByMaterialId(materialId: Long): Long = findCourseMaterialTableById(materialId).get.courseId
+
+  override def addCourseMaterial(courseId: Long, name: String, content: String): Boolean =
+    insertCourseMaterialTable(courseId, name, content)
+
+  override def deleteCourseMaterial(id: Long): Boolean = deleteCourseMaterialTable(id)
+
+  override def updateCourseMaterial(id: Long, name: Option[String], content: Option[String]): Boolean = {
+    if (name.nonEmpty) updateNameInCourseMaterialTable(id, name.get)
+    if (content.nonEmpty) updateContentInCourseMaterialTable(id, content.get)
+    updateDateOfAddingInCourseMaterialTable(id)
+  }
+
+  private def findVerCodeByEmail(email: Email): Option[UUID] = findAccountTableByEmail(email).map(_.personVerificationCode)
 
   private def findStudentByVerCode(verificationCode: UUID): Option[Student] =
     findPersonTableByVerCode(verificationCode)

@@ -35,7 +35,7 @@ object HomeTaskTable {
 
   def findAvailableHomeTaskTablesByCourseId(courseId: Long)(implicit db: Database): List[HomeTaskTable] =
     db.withConnection { implicit connection =>
-      SQL"SELECT * FROM home_task where (course_id = $courseId AND start_date <= NOW())".as(homeTaskParser.*)
+      SQL"SELECT * FROM home_task where (course_id = $courseId AND start_date <= NOW()::DATE)".as(homeTaskParser.*)
     }
 
 }

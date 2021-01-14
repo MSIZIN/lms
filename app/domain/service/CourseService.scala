@@ -7,4 +7,7 @@ import domain.service.messages._
 trait CourseService {
   def courseList(request: CourseListRequest): CourseListResponse
   def course(request: CourseRequest): CourseResponse
+  def addCourseMaterial(request: AddCourseMaterialRequest): AddCourseMaterialResponse
+  def deleteCourseMaterial(request: DeleteCourseMaterialRequest): DeleteCourseMaterialResponse
+  def updateCourseMaterial(request: UpdateCourseMaterialRequest): UpdateCourseMaterialResponse
 }

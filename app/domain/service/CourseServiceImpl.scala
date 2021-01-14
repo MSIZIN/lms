@@ -25,6 +25,34 @@ class CourseServiceImpl @Inject() (courseDao: CourseDao) extends CourseService {
       case None             => CourseFailure
     }
 
+  override def addCourseMaterial(request: AddCourseMaterialRequest): AddCourseMaterialResponse =
+    if (!courseDao.isGroupLeaderOfCourse(request.courseId, request.email) && !courseDao.isTeacherOfCourse(request.courseId, request.email))
+      NotEnoughRightsToAddCourseMaterial
+    else {
+      courseDao.addCourseMaterial(request.courseId, request.name, request.content)
+      AddCourseMaterialSuccess
+    }
+
+  override def deleteCourseMaterial(request: DeleteCourseMaterialRequest): DeleteCourseMaterialResponse = {
+    val courseId = courseDao.findCourseIdByMaterialId(request.materialId)
+    if (!courseDao.isGroupLeaderOfCourse(courseId, request.email) && !courseDao.isTeacherOfCourse(courseId, request.email))
+      NotEnoughRightsToDeleteCourseMaterial
+    else {
+      courseDao.deleteCourseMaterial(request.materialId)
+      DeleteCourseMaterialSuccess
+    }
+  }
+
+  override def updateCourseMaterial(request: UpdateCourseMaterialRequest): UpdateCourseMaterialResponse = {
+    val courseId = courseDao.findCourseIdByMaterialId(request.materialId)
+    if (!courseDao.isGroupLeaderOfCourse(courseId, request.email) && !courseDao.isTeacherOfCourse(courseId, request.email))
+      NotEnoughRightsToUpdateCourseMaterial
+    else {
+      courseDao.updateCourseMaterial(request.materialId, request.name, request.content)
+      UpdateCourseMaterialSuccess
+    }
+  }
+
 }
 object CourseServiceImpl {
 

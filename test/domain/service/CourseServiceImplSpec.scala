@@ -45,6 +45,18 @@ class CourseServiceImplSpec extends PlaySpec {
       } else
         None
 
+    override def isTeacherOfCourse(courseId: Long, email: Email): Boolean = true
+
+    override def isGroupLeaderOfCourse(courseId: Long, email: Email): Boolean = true
+
+    override def findCourseIdByMaterialId(materialId: Long): Long = 1
+
+    override def addCourseMaterial(id: Long, name: String, content: String): Boolean = true
+
+    override def deleteCourseMaterial(id: Long): Boolean = true
+
+    override def updateCourseMaterial(id: Long, name: Option[String], content: Option[String]): Boolean = true
+
   }
 
   val courseService = new CourseServiceImpl(courseDaoMock)
