@@ -1,5 +1,7 @@
 package dao
 
+import java.time.LocalDate
+
 import com.google.inject.ImplementedBy
 import domain.model._
 
@@ -11,7 +13,11 @@ trait CourseDao {
   def findCoursesByEmail(email: Email): Option[List[Course]]
   def findCourseInfoById(id: Long, email: Email): Option[CourseInfo]
   def findCourseIdByMaterialId(materialId: Long): Long
-  def addCourseMaterial(id: Long, name: String, content: String): Boolean
-  def deleteCourseMaterial(id: Long): Boolean
-  def updateCourseMaterial(id: Long, name: Option[String], content: Option[String]): Boolean
+  def findCourseIdByHomeTaskId(homeTaskId: Long): Long
+  def addCourseMaterial(courseId: Long, name: String, content: String): Unit
+  def deleteCourseMaterial(id: Long): Unit
+  def updateCourseMaterial(id: Long, name: Option[String], content: Option[String]): Unit
+  def addHomeTask(courseId: Long, name: String, startDate: LocalDate, finishDate: LocalDate, description: String): Unit
+  def deleteHomeTask(id: Long): Unit
+  def updateHomeTask(id: Long, name: Option[String], timeInterval: Option[(LocalDate, LocalDate)], description: Option[String]): Unit
 }

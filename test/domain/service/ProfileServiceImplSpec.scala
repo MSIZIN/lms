@@ -40,7 +40,7 @@ class ProfileServiceImplSpec extends PlaySpec {
 
     override def findProfileByEmail(email: Email): Option[Profile] = emailToProfile.get(email)
 
-    override def updatePersonFieldByEmail(fieldName: String, fieldValue: String, email: Email): Boolean = true
+    override def updatePersonFieldByEmail(fieldName: String, fieldValue: String, email: Email): Unit = ()
 
     override def findGroupmatesByEmail(email: Email): Option[List[Student]] =
       if (email == Email("student@email.com"))

@@ -10,4 +10,7 @@ trait CourseService {
   def addCourseMaterial(request: AddCourseMaterialRequest): AddCourseMaterialResponse
   def deleteCourseMaterial(request: DeleteCourseMaterialRequest): DeleteCourseMaterialResponse
   def updateCourseMaterial(request: UpdateCourseMaterialRequest): UpdateCourseMaterialResponse
+  def addHomeTask(request: AddHomeTaskRequest): AddHomeTaskResponse
+  def deleteHomeTask(request: DeleteHomeTaskRequest): DeleteHomeTaskResponse
+  def updateHomeTask(request: UpdateHomeTaskRequest): UpdateHomeTaskResponse
 }

@@ -10,6 +10,6 @@ trait AuthDao {
   def findAccByEmail(email: Email): Option[Account]
   def findAccByVerCode(verificationCode: UUID): Option[Account]
   def findPersonByVerCode(verificationCode: UUID): Option[Person]
-  def insertAcc(verificationCode: UUID, account: Account): Boolean
-  def updatePasswordByEmail(password: Password, email: Email): Boolean
+  def insertAcc(verificationCode: UUID, account: Account): Unit
+  def updatePasswordByEmail(password: Password, email: Email): Unit
 }

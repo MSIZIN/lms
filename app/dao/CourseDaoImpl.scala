@@ -1,5 +1,6 @@
 package dao
 
+import java.time.LocalDate
 import java.util.UUID
 
 import dao.table.AccountTable._
@@ -87,15 +88,33 @@ class CourseDaoImpl @Inject() (dbapi: DBApi) extends CourseDao {
 
   override def findCourseIdByMaterialId(materialId: Long): Long = findCourseMaterialTableById(materialId).get.courseId
 
-  override def addCourseMaterial(courseId: Long, name: String, content: String): Boolean =
+  override def findCourseIdByHomeTaskId(homeTaskId: Long): Long = findHomeTaskTableById(homeTaskId).get.courseId
+
+  override def addCourseMaterial(courseId: Long, name: String, content: String): Unit =
     insertCourseMaterialTable(courseId, name, content)
 
-  override def deleteCourseMaterial(id: Long): Boolean = deleteCourseMaterialTable(id)
+  override def deleteCourseMaterial(id: Long): Unit = deleteCourseMaterialTable(id)
 
-  override def updateCourseMaterial(id: Long, name: Option[String], content: Option[String]): Boolean = {
+  override def updateCourseMaterial(id: Long, name: Option[String], content: Option[String]): Unit = {
     if (name.nonEmpty) updateNameInCourseMaterialTable(id, name.get)
     if (content.nonEmpty) updateContentInCourseMaterialTable(id, content.get)
     updateDateOfAddingInCourseMaterialTable(id)
+  }
+
+  override def addHomeTask(courseId: Long, name: String, startDate: LocalDate, finishDate: LocalDate, description: String): Unit =
+    insertHomeTaskTable(courseId: Long, name: String, startDate: LocalDate, finishDate: LocalDate, description: String)
+
+  override def deleteHomeTask(id: Long): Unit = deleteHomeTaskTable(id)
+
+  override def updateHomeTask(
+    id: Long,
+    name: Option[String],
+    timeInterval: Option[(LocalDate, LocalDate)],
+    description: Option[String]
+  ): Unit = {
+    if (name.nonEmpty) updateNameInHomeTaskTable(id, name.get)
+    if (timeInterval.nonEmpty) updateTimeIntervalInHomeTaskTable(id, timeInterval.get)
+    if (description.nonEmpty) updateDescriptionInHomeTaskTable(id, description.get)
   }
 
   private def findVerCodeByEmail(email: Email): Option[UUID] = findAccountTableByEmail(email).map(_.personVerificationCode)

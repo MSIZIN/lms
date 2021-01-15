@@ -37,10 +37,10 @@ class AuthDaoImpl @Inject() (dbapi: DBApi) extends AuthDao {
         )
       )
 
-  override def insertAcc(verificationCode: UUID, account: Account): Boolean =
+  override def insertAcc(verificationCode: UUID, account: Account): Unit =
     insertAccountTable(AccountTable(None, verificationCode, account.email.value, account.password.value))
 
-  override def updatePasswordByEmail(password: Password, email: Email): Boolean =
+  override def updatePasswordByEmail(password: Password, email: Email): Unit =
     updateAccTableWithPswdByEmail(password, email)
 
 }

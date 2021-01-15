@@ -59,4 +59,60 @@ class CourseController @Inject() (authService: AuthService, courseService: Cours
     }
   }
 
+  def addHomeTask(id: Long, name: String, startDate: String, finishDate: String, description: String): Action[AnyContent] =
+    Action { request =>
+      withAuthenticatedUser(request, authService) { creds =>
+        val startLocalDate = parseDate(startDate)
+        val finishLocalDate = parseDate(finishDate)
+        if (startLocalDate.isEmpty || finishLocalDate.isEmpty)
+          BadRequest("Дата введена неправильно (формат должен быть такой: год-месяц-день)")
+        else if (startLocalDate.get.isAfter(finishLocalDate.get))
+          BadRequest("Дата начала времени сдачи не должна быть позже даты конца времени сдачи")
+        else
+          courseService.addHomeTask(AddHomeTaskRequest(id, name, startLocalDate.get, finishLocalDate.get, description, creds.email)) match {
+            case AddHomeTaskSuccess           => Ok("Домашнее задание успешно добавлено")
+            case NotEnoughRightsToAddHomeTask => BadRequest("Чтобы добавлять домашние задания, нужно быть преподавателем")
+          }
+      }
+    }
+
+  def deleteHomeTask(id: Long): Action[AnyContent] = Action { request =>
+    withAuthenticatedUser(request, authService) { creds =>
+      courseService.deleteHomeTask(DeleteHomeTaskRequest(id, creds.email)) match {
+        case DeleteHomeTaskSuccess           => Ok("Домашнее задание успешно удалено")
+        case NotEnoughRightsToDeleteHomeTask => BadRequest("Чтобы удалять домашние задания, нужно быть преподавателем")
+      }
+    }
+  }
+
+  def updateHomeTask(
+    id: Long,
+    name: Option[String],
+    startDate: Option[String],
+    finishDate: Option[String],
+    description: Option[String]
+  ): Action[AnyContent] = Action { request =>
+    withAuthenticatedUser(request, authService) { creds =>
+      val startLocalDate = startDate.flatMap(date => parseDate(date))
+      val finishLocalDate = finishDate.flatMap(date => parseDate(date))
+      if (startDate.nonEmpty && finishDate.isEmpty || startDate.isEmpty && finishDate.nonEmpty)
+        BadRequest("Чтобы изменить временной интервал, введите начало и конец нового интервала")
+      else if (startDate.nonEmpty && finishDate.nonEmpty && (startLocalDate.isEmpty || finishLocalDate.isEmpty))
+        BadRequest("Дата введена неправильно (формат должен быть такой: год-месяц-день)")
+      else if (startDate.nonEmpty && finishDate.nonEmpty && startLocalDate.get.isAfter(finishLocalDate.get))
+        BadRequest("Дата начала времени сдачи не должна быть позже даты конца времени сдачи")
+      else {
+        val timeInterval =
+          for {
+            start <- startLocalDate
+            finish <- finishLocalDate
+          } yield (start, finish)
+        courseService.updateHomeTask(UpdateHomeTaskRequest(id, name, timeInterval, description, creds.email)) match {
+          case UpdateHomeTaskSuccess           => Ok("Домашнее задание успешно изменено")
+          case NotEnoughRightsToUpdateHomeTask => BadRequest("Чтобы модифицировать домашние задания, нужно быть преподавателем")
+        }
+      }
+    }
+  }
+
 }

@@ -47,9 +47,9 @@ class AuthServiceImplSpec extends PlaySpec {
 
     override def findPersonByVerCode(verificationCode: UUID): Option[Person] = vercodeToPerson.get(verificationCode)
 
-    override def insertAcc(verificationCode: UUID, account: Account): Boolean = true
+    override def insertAcc(verificationCode: UUID, account: Account): Unit = ()
 
-    override def updatePasswordByEmail(password: Password, email: Email): Boolean = true
+    override def updatePasswordByEmail(password: Password, email: Email): Unit = ()
 
   }
 

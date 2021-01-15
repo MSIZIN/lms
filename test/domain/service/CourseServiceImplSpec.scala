@@ -51,12 +51,24 @@ class CourseServiceImplSpec extends PlaySpec {
 
     override def findCourseIdByMaterialId(materialId: Long): Long = 1
 
-    override def addCourseMaterial(id: Long, name: String, content: String): Boolean = true
+    override def addCourseMaterial(courseId: Long, name: String, content: String): Unit = ()
 
-    override def deleteCourseMaterial(id: Long): Boolean = true
+    override def deleteCourseMaterial(id: Long): Unit = ()
 
-    override def updateCourseMaterial(id: Long, name: Option[String], content: Option[String]): Boolean = true
+    override def updateCourseMaterial(id: Long, name: Option[String], content: Option[String]): Unit = ()
 
+    override def findCourseIdByHomeTaskId(homeTaskId: Long): Long = 1
+
+    override def addHomeTask(courseId: Long, name: String, startDate: LocalDate, finishDate: LocalDate, description: String): Unit = ()
+
+    override def deleteHomeTask(id: Long): Unit = ()
+
+    override def updateHomeTask(
+      id: Long,
+      name: Option[String],
+      timeInterval: Option[(LocalDate, LocalDate)],
+      description: Option[String]
+    ): Unit = ()
   }
 
   val courseService = new CourseServiceImpl(courseDaoMock)

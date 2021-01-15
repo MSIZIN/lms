@@ -21,7 +21,7 @@ class ProfileDaoImpl @Inject() (dbapi: DBApi) extends ProfileDao {
       profile <- findProfileByVerCode(vercode)
     } yield profile
 
-  override def updatePersonFieldByEmail(fieldName: String, fieldValue: String, email: Email): Boolean = {
+  override def updatePersonFieldByEmail(fieldName: String, fieldValue: String, email: Email): Unit = {
     val verificationCode = findVerCodeByEmail(email).get
     updatePersonTableFieldByVerCode(fieldName, fieldValue, verificationCode)
   }

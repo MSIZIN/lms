@@ -1,5 +1,7 @@
 package domain.service.messages
 
+import java.time.LocalDate
+
 import domain.model.Email
 
 final case class CourseListRequest(email: Email)
@@ -32,3 +34,34 @@ final case class UpdateCourseMaterialRequest(materialId: Long, name: Option[Stri
 sealed trait UpdateCourseMaterialResponse
 case object UpdateCourseMaterialSuccess extends UpdateCourseMaterialResponse
 case object NotEnoughRightsToUpdateCourseMaterial extends UpdateCourseMaterialResponse
+
+final case class AddHomeTaskRequest(
+  courseId: Long,
+  name: String,
+  startDate: LocalDate,
+  finishDate: LocalDate,
+  description: String,
+  email: Email
+)
+
+sealed trait AddHomeTaskResponse
+case object AddHomeTaskSuccess extends AddHomeTaskResponse
+case object NotEnoughRightsToAddHomeTask extends AddHomeTaskResponse
+
+final case class DeleteHomeTaskRequest(homeTaskId: Long, email: Email)
+
+sealed trait DeleteHomeTaskResponse
+case object DeleteHomeTaskSuccess extends DeleteHomeTaskResponse
+case object NotEnoughRightsToDeleteHomeTask extends DeleteHomeTaskResponse
+
+final case class UpdateHomeTaskRequest(
+  homeTaskId: Long,
+  name: Option[String],
+  timeInterval: Option[(LocalDate, LocalDate)],
+  description: Option[String],
+  email: Email
+)
+
+sealed trait UpdateHomeTaskResponse
+case object UpdateHomeTaskSuccess extends UpdateHomeTaskResponse
+case object NotEnoughRightsToUpdateHomeTask extends UpdateHomeTaskResponse

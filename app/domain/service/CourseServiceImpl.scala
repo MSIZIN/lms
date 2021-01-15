@@ -53,6 +53,34 @@ class CourseServiceImpl @Inject() (courseDao: CourseDao) extends CourseService {
     }
   }
 
+  override def addHomeTask(request: AddHomeTaskRequest): AddHomeTaskResponse =
+    if (!courseDao.isTeacherOfCourse(request.courseId, request.email))
+      NotEnoughRightsToAddHomeTask
+    else {
+      courseDao.addHomeTask(request.courseId, request.name, request.startDate, request.finishDate, request.description)
+      AddHomeTaskSuccess
+    }
+
+  override def deleteHomeTask(request: DeleteHomeTaskRequest): DeleteHomeTaskResponse = {
+    val courseId = courseDao.findCourseIdByHomeTaskId(request.homeTaskId)
+    if (!courseDao.isTeacherOfCourse(courseId, request.email))
+      NotEnoughRightsToDeleteHomeTask
+    else {
+      courseDao.deleteHomeTask(request.homeTaskId)
+      DeleteHomeTaskSuccess
+    }
+  }
+
+  override def updateHomeTask(request: UpdateHomeTaskRequest): UpdateHomeTaskResponse = {
+    val courseId = courseDao.findCourseIdByHomeTaskId(request.homeTaskId)
+    if (!courseDao.isTeacherOfCourse(courseId, request.email))
+      NotEnoughRightsToUpdateHomeTask
+    else {
+      courseDao.updateHomeTask(request.homeTaskId, request.name, request.timeInterval, request.description)
+      UpdateHomeTaskSuccess
+    }
+  }
+
 }
 object CourseServiceImpl {
 

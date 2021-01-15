@@ -38,4 +38,37 @@ object HomeTaskTable {
       SQL"SELECT * FROM home_task where (course_id = $courseId AND start_date <= NOW()::DATE)".as(homeTaskParser.*)
     }
 
+  def findHomeTaskTableById(id: Long)(implicit db: Database): Option[HomeTaskTable] =
+    db.withConnection { implicit connection =>
+      SQL"SELECT * FROM home_task where id = $id".as(homeTaskParser.singleOpt)
+    }
+
+  def insertHomeTaskTable(courseId: Long, name: String, startDate: LocalDate, finishDate: LocalDate, description: String)(
+    implicit db: Database
+  ): Boolean =
+    db.withConnection { implicit connection =>
+      SQL"INSERT INTO home_task(course_id, name, start_date, finish_date, description) VALUES ($courseId, $name, $startDate, $finishDate, $description)"
+        .execute()
+    }
+
+  def deleteHomeTaskTable(id: Long)(implicit db: Database): Boolean =
+    db.withConnection { implicit connection =>
+      SQL"DELETE FROM home_task WHERE id=$id".execute()
+    }
+
+  def updateNameInHomeTaskTable(id: Long, name: String)(implicit db: Database): Boolean =
+    db.withConnection { implicit connection =>
+      SQL"UPDATE home_task SET name = $name WHERE id=$id".execute()
+    }
+
+  def updateTimeIntervalInHomeTaskTable(id: Long, timeInterval: (LocalDate, LocalDate))(implicit db: Database): Boolean =
+    db.withConnection { implicit connection =>
+      SQL"UPDATE home_task SET start_date = ${timeInterval._1}, finish_date = ${timeInterval._2} WHERE id=$id".execute()
+    }
+
+  def updateDescriptionInHomeTaskTable(id: Long, description: String)(implicit db: Database): Boolean =
+    db.withConnection { implicit connection =>
+      SQL"UPDATE home_task SET description = $description WHERE id=$id".execute()
+    }
+
 }
