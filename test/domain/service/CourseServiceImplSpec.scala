@@ -69,6 +69,12 @@ class CourseServiceImplSpec extends PlaySpec {
       timeInterval: Option[(LocalDate, LocalDate)],
       description: Option[String]
     ): Unit = ()
+
+    override def isStudentOfCourse(courseId: Long, email: Email): Boolean = true
+
+    override def addGroupLeader(courseId: Long, email: Email): Unit = ()
+
+    override def deleteGroupLeader(courseId: Long, email: Email): Unit = ()
   }
 
   val courseService = new CourseServiceImpl(courseDaoMock)

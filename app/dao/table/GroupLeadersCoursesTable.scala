@@ -24,4 +24,14 @@ object GroupLeadersCoursesTable {
       SQL"SELECT * FROM group_leaders_courses where course_id = $courseId".as(groupLeadersCoursesParser.*)
     }
 
+  def insertGroupLeadersCoursesTableTable(studentId: UUID, courseId: Long)(implicit db: Database): Boolean =
+    db.withConnection { implicit connection =>
+      SQL"INSERT INTO group_leaders_courses(student_id, course_id) VALUES (CAST(${studentId.toString} AS UUID), $courseId)".execute()
+    }
+
+  def deleteGroupLeadersCoursesTableTable(studentId: UUID, courseId: Long)(implicit db: Database): Boolean =
+    db.withConnection { implicit connection =>
+      SQL"DELETE FROM group_leaders_courses WHERE student_id = CAST(${studentId.toString} AS UUID) AND course_id = $courseId".execute()
+    }
+
 }

@@ -9,6 +9,7 @@ import domain.model._
 trait CourseDao {
   def isStudent(email: Email): Boolean
   def isTeacherOfCourse(courseId: Long, email: Email): Boolean
+  def isStudentOfCourse(courseId: Long, email: Email): Boolean
   def isGroupLeaderOfCourse(courseId: Long, email: Email): Boolean
   def findCoursesByEmail(email: Email): Option[List[Course]]
   def findCourseInfoById(id: Long, email: Email): Option[CourseInfo]
@@ -20,4 +21,6 @@ trait CourseDao {
   def addHomeTask(courseId: Long, name: String, startDate: LocalDate, finishDate: LocalDate, description: String): Unit
   def deleteHomeTask(id: Long): Unit
   def updateHomeTask(id: Long, name: Option[String], timeInterval: Option[(LocalDate, LocalDate)], description: Option[String]): Unit
+  def addGroupLeader(courseId: Long, email: Email): Unit
+  def deleteGroupLeader(courseId: Long, email: Email): Unit
 }

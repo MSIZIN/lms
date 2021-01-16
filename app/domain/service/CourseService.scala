@@ -13,4 +13,6 @@ trait CourseService {
   def addHomeTask(request: AddHomeTaskRequest): AddHomeTaskResponse
   def deleteHomeTask(request: DeleteHomeTaskRequest): DeleteHomeTaskResponse
   def updateHomeTask(request: UpdateHomeTaskRequest): UpdateHomeTaskResponse
+  def addGroupLeader(request: AddGroupLeaderRequest): AddGroupLeaderResponse
+  def deleteGroupLeader(request: DeleteGroupLeaderRequest): DeleteGroupLeaderResponse
 }

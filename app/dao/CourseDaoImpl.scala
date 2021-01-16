@@ -43,6 +43,17 @@ class CourseDaoImpl @Inject() (dbapi: DBApi) extends CourseDao {
       case None    => false
     }
 
+  override def isStudentOfCourse(courseId: Long, email: Email): Boolean =
+    (
+      for {
+        vercode <- findVerCodeByEmail(email)
+        groupId <- findEducInfoTableByVerCode(vercode).map(_.groupId)
+      } yield findGroupsCoursesTablesByGroupId(groupId)
+    ) match {
+      case Some(groupsCourses) if groupsCourses.exists(_.courseId == courseId) => true
+      case _                                                                   => false
+    }
+
   override def isGroupLeaderOfCourse(courseId: Long, email: Email): Boolean =
     (
       for {
@@ -116,6 +127,12 @@ class CourseDaoImpl @Inject() (dbapi: DBApi) extends CourseDao {
     if (timeInterval.nonEmpty) updateTimeIntervalInHomeTaskTable(id, timeInterval.get)
     if (description.nonEmpty) updateDescriptionInHomeTaskTable(id, description.get)
   }
+
+  override def addGroupLeader(courseId: Long, email: Email): Unit =
+    insertGroupLeadersCoursesTableTable(findVerCodeByEmail(email).get, courseId)
+
+  override def deleteGroupLeader(courseId: Long, email: Email): Unit =
+    deleteGroupLeadersCoursesTableTable(findVerCodeByEmail(email).get, courseId)
 
   private def findVerCodeByEmail(email: Email): Option[UUID] = findAccountTableByEmail(email).map(_.personVerificationCode)
 

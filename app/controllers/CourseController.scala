@@ -1,6 +1,7 @@
 package controllers
 
 import controllers.ControllerHelpers._
+import domain.model.Email
 import domain.service._
 import domain.service.messages._
 import javax.inject._
@@ -29,9 +30,9 @@ class CourseController @Inject() (authService: AuthService, courseService: Cours
     }
   }
 
-  def addCourseMaterial(id: Long, name: String, content: String): Action[AnyContent] = Action { request =>
+  def addCourseMaterial(courseId: Long, name: String, content: String): Action[AnyContent] = Action { request =>
     withAuthenticatedUser(request, authService) { creds =>
-      courseService.addCourseMaterial(AddCourseMaterialRequest(id, name, content, creds.email)) match {
+      courseService.addCourseMaterial(AddCourseMaterialRequest(courseId, name, content, creds.email)) match {
         case AddCourseMaterialSuccess => Ok("Материал курса успешно добавлен")
         case NotEnoughRightsToAddCourseMaterial =>
           BadRequest("Чтобы добавлять материалы курса, нужно быть либо преподавателем этого курса либо доверенным лицом")
@@ -59,7 +60,7 @@ class CourseController @Inject() (authService: AuthService, courseService: Cours
     }
   }
 
-  def addHomeTask(id: Long, name: String, startDate: String, finishDate: String, description: String): Action[AnyContent] =
+  def addHomeTask(courseId: Long, name: String, startDate: String, finishDate: String, description: String): Action[AnyContent] =
     Action { request =>
       withAuthenticatedUser(request, authService) { creds =>
         val startLocalDate = parseDate(startDate)
@@ -69,7 +70,7 @@ class CourseController @Inject() (authService: AuthService, courseService: Cours
         else if (startLocalDate.get.isAfter(finishLocalDate.get))
           BadRequest("Дата начала времени сдачи не должна быть позже даты конца времени сдачи")
         else
-          courseService.addHomeTask(AddHomeTaskRequest(id, name, startLocalDate.get, finishLocalDate.get, description, creds.email)) match {
+          courseService.addHomeTask(AddHomeTaskRequest(courseId, name, startLocalDate.get, finishLocalDate.get, description, creds.email)) match {
             case AddHomeTaskSuccess           => Ok("Домашнее задание успешно добавлено")
             case NotEnoughRightsToAddHomeTask => BadRequest("Чтобы добавлять домашние задания, нужно быть преподавателем")
           }
@@ -111,6 +112,28 @@ class CourseController @Inject() (authService: AuthService, courseService: Cours
           case UpdateHomeTaskSuccess           => Ok("Домашнее задание успешно изменено")
           case NotEnoughRightsToUpdateHomeTask => BadRequest("Чтобы модифицировать домашние задания, нужно быть преподавателем")
         }
+      }
+    }
+  }
+
+  def addGroupLeader(courseId: Long, email: String): Action[AnyContent] = Action { request =>
+    withAuthenticatedUser(request, authService) { creds =>
+      courseService.addGroupLeader(AddGroupLeaderRequest(courseId, Email(email), creds.email)) match {
+        case AddGroupLeaderSuccess           => Ok("Студент успешно добавлен в список доверенных лиц")
+        case StudentIsNotEnrolledInCourse    => BadRequest("Студент не записан на этот курс")
+        case StudentIsAlreadyGroupLeader     => BadRequest("Студент уже является доверенным лицом")
+        case NotEnoughRightsToAddGroupLeader => BadRequest("Чтобы сделать студента доверенным лицом, нужно быть преподавателем этого курса")
+      }
+    }
+  }
+
+  def deleteGroupLeader(courseId: Long, email: String): Action[AnyContent] = Action { request =>
+    withAuthenticatedUser(request, authService) { creds =>
+      courseService.deleteGroupLeader(DeleteGroupLeaderRequest(courseId, Email(email), creds.email)) match {
+        case DeleteGroupLeaderSuccess => Ok("Студент успешно убран из списка доверенных лиц")
+        case StudentIsNotGroupLeader  => BadRequest("Студент не является доверенным лицом")
+        case NotEnoughRightsToDeleteGroupLeader =>
+          BadRequest("Чтобы убрать студента из списка доверенных лиц, нужно быть преподавателем этого курса")
       }
     }
   }

@@ -65,3 +65,18 @@ final case class UpdateHomeTaskRequest(
 sealed trait UpdateHomeTaskResponse
 case object UpdateHomeTaskSuccess extends UpdateHomeTaskResponse
 case object NotEnoughRightsToUpdateHomeTask extends UpdateHomeTaskResponse
+
+final case class AddGroupLeaderRequest(courseId: Long, studentEmail: Email, userEmail: Email)
+
+sealed trait AddGroupLeaderResponse
+case object AddGroupLeaderSuccess extends AddGroupLeaderResponse
+case object StudentIsNotEnrolledInCourse extends AddGroupLeaderResponse
+case object StudentIsAlreadyGroupLeader extends AddGroupLeaderResponse
+case object NotEnoughRightsToAddGroupLeader extends AddGroupLeaderResponse
+
+final case class DeleteGroupLeaderRequest(courseId: Long, studentEmail: Email, userEmail: Email)
+
+sealed trait DeleteGroupLeaderResponse
+case object DeleteGroupLeaderSuccess extends DeleteGroupLeaderResponse
+case object StudentIsNotGroupLeader extends DeleteGroupLeaderResponse
+case object NotEnoughRightsToDeleteGroupLeader extends DeleteGroupLeaderResponse

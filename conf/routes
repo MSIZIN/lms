@@ -1,25 +1,27 @@
-GET        /                                controllers.HomeController.index
+GET        /                                 controllers.HomeController.index
 
-GET        /login                           controllers.AuthController.login(email: String, password: String)
-GET        /signup                          controllers.AuthController.signup(vercode: String, email: String, password: String)
-GET        /update/password                 controllers.AuthController.updatePassword(oldPassword: String, newPassword: String)
+GET        /login                            controllers.AuthController.login(email: String, password: String)
+GET        /signup                           controllers.AuthController.signup(vercode: String, email: String, password: String)
+GET        /update/password                  controllers.AuthController.updatePassword(oldPassword: String, newPassword: String)
 
-GET        /profile                         controllers.ProfileController.profile
-GET        /profile/another                 controllers.ProfileController.anotherProfile(email: String)
-GET        /profile/update/phone            controllers.ProfileController.updatePhone(phone: String)
-GET        /profile/update/town             controllers.ProfileController.updateHomeTown(town: String)
-GET        /profile/update/info             controllers.ProfileController.updatePersonInfo(info: String)
-GET        /profile/update/vk               controllers.ProfileController.updateVkLink(link: String)
-GET        /profile/update/facebook         controllers.ProfileController.updateFacebookLink(link: String)
-GET        /profile/update/linkedin         controllers.ProfileController.updateLinkedinLink(link: String)
-GET        /profile/update/instagram        controllers.ProfileController.updateInstagramLink(link: String)
-GET        /groupmates                      controllers.ProfileController.groupmates
+GET        /profile                          controllers.ProfileController.profile
+GET        /profile/another                  controllers.ProfileController.anotherProfile(email: String)
+GET        /profile/update/phone             controllers.ProfileController.updatePhone(phone: String)
+GET        /profile/update/town              controllers.ProfileController.updateHomeTown(town: String)
+GET        /profile/update/info              controllers.ProfileController.updatePersonInfo(info: String)
+GET        /profile/update/vk                controllers.ProfileController.updateVkLink(link: String)
+GET        /profile/update/facebook          controllers.ProfileController.updateFacebookLink(link: String)
+GET        /profile/update/linkedin          controllers.ProfileController.updateLinkedinLink(link: String)
+GET        /profile/update/instagram         controllers.ProfileController.updateInstagramLink(link: String)
+GET        /groupmates                       controllers.ProfileController.groupmates
 
-GET        /course/list                     controllers.CourseController.courseList
-GET        /course                          controllers.CourseController.course(id: Long)
-GET        /course/material/add             controllers.CourseController.addCourseMaterial(id: Long, name: String, content: String)
-GET        /course/material/delete          controllers.CourseController.deleteCourseMaterial(id: Long)
-GET        /course/material/update          controllers.CourseController.updateCourseMaterial(id: Long, name: Option[String], content: Option[String])
-GET        /course/hometask/add             controllers.CourseController.addHomeTask(id: Long, name: String, startDate: String, finishDate: String, description: String)
-GET        /course/hometask/delete          controllers.CourseController.deleteHomeTask(id: Long)
-GET        /course/hometask/update          controllers.CourseController.updateHomeTask(id: Long, name: Option[String], startDate: Option[String], finishDate: Option[String], description: Option[String])
+GET        /course/list                      controllers.CourseController.courseList
+GET        /course                           controllers.CourseController.course(id: Long)
+GET        /course/material/add              controllers.CourseController.addCourseMaterial(courseId: Long, name: String, content: String)
+GET        /course/material/delete           controllers.CourseController.deleteCourseMaterial(id: Long)
+GET        /course/material/update           controllers.CourseController.updateCourseMaterial(id: Long, name: Option[String], content: Option[String])
+GET        /course/hometask/add              controllers.CourseController.addHomeTask(courseId: Long, name: String, startDate: String, finishDate: String, description: String)
+GET        /course/hometask/delete           controllers.CourseController.deleteHomeTask(id: Long)
+GET        /course/hometask/update           controllers.CourseController.updateHomeTask(id: Long, name: Option[String], startDate: Option[String], finishDate: Option[String], description: Option[String])
+GET        /course/groupleader/add           controllers.CourseController.addGroupLeader(courseId: Long, email: String)
+GET        /course/groupleader/delete        controllers.CourseController.deleteGroupLeader(courseId: Long, email: String)

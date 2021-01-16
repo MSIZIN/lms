@@ -81,6 +81,28 @@ class CourseServiceImpl @Inject() (courseDao: CourseDao) extends CourseService {
     }
   }
 
+  override def addGroupLeader(request: AddGroupLeaderRequest): AddGroupLeaderResponse =
+    if (!courseDao.isTeacherOfCourse(request.courseId, request.userEmail))
+      NotEnoughRightsToAddGroupLeader
+    else if (!courseDao.isStudentOfCourse(request.courseId, request.studentEmail))
+      StudentIsNotEnrolledInCourse
+    else if (courseDao.isGroupLeaderOfCourse(request.courseId, request.studentEmail))
+      StudentIsAlreadyGroupLeader
+    else {
+      courseDao.addGroupLeader(request.courseId, request.studentEmail)
+      AddGroupLeaderSuccess
+    }
+
+  override def deleteGroupLeader(request: DeleteGroupLeaderRequest): DeleteGroupLeaderResponse =
+    if (!courseDao.isTeacherOfCourse(request.courseId, request.userEmail))
+      NotEnoughRightsToDeleteGroupLeader
+    else if (!courseDao.isGroupLeaderOfCourse(request.courseId, request.studentEmail))
+      StudentIsNotGroupLeader
+    else {
+      courseDao.deleteGroupLeader(request.courseId, request.studentEmail)
+      DeleteGroupLeaderSuccess
+    }
+
 }
 object CourseServiceImpl {
 
