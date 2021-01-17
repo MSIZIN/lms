@@ -4,12 +4,13 @@ import java.time.LocalDate
 
 import dao.CourseDao
 import domain.model._
-import domain.service.CourseServiceImpl.{decorateCourseInfo, decorateCourseList}
 import domain.service.messages._
 import javax.inject._
 
 @Singleton
 class CourseServiceImpl @Inject() (courseDao: CourseDao) extends CourseService {
+
+  import CourseServiceImpl._
 
   override def courseList(request: CourseListRequest): CourseListResponse =
     courseDao.findCoursesByEmail(request.email) match {
@@ -148,7 +149,7 @@ object CourseServiceImpl {
           s"""id: $id
             |Имя материала: $name
             |Содержимое: $content
-            |Дата добавления: ${toRussionDateFormat(date)}""".stripMargin
+            |Дата добавления: ${toRussianDateFormat(date)}""".stripMargin
       }
       .mkString("\n\n")
 
@@ -160,11 +161,11 @@ object CourseServiceImpl {
         case (id, name, startDate, finishDate, description) =>
           s"""id: $id
              |Название: $name
-             |Интервал времени сдачи: ${toRussionDateFormat(startDate)} - ${toRussionDateFormat(finishDate)}
+             |Интервал времени сдачи: ${toRussianDateFormat(startDate)} - ${toRussianDateFormat(finishDate)}
              |Описание: $description""".stripMargin
       }
       .mkString("\n\n")
 
-  private def toRussionDateFormat(date: LocalDate): String = date.toString.split('-').reverse.mkString(".")
+  private def toRussianDateFormat(date: LocalDate): String = date.toString.split('-').reverse.mkString(".")
 
 }

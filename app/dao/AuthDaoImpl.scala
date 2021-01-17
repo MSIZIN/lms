@@ -5,7 +5,7 @@ import java.util.UUID
 import dao.table._
 import dao.table.AccountTable._
 import dao.table.PersonTable._
-import domain.model.{Account, Email, Password, Person, Student}
+import domain.model.{Account, Email, Password, Person}
 import javax.inject._
 import play.api.db.{DBApi, Database}
 

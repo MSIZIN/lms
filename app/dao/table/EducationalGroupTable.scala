@@ -26,4 +26,9 @@ object EducationalGroupTable {
       SQL"SELECT * FROM educational_group where id = $id".as(educationalGroupParser.singleOpt)
     }
 
+  def findEducGroupTableByName(name: String)(implicit db: Database): Option[EducationalGroupTable] =
+    db.withConnection { implicit connection =>
+      SQL"SELECT * FROM educational_group where name = $name".as(educationalGroupParser.singleOpt)
+    }
+
 }

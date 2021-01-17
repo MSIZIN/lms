@@ -25,3 +25,5 @@ GET        /course/hometask/delete           controllers.CourseController.delete
 GET        /course/hometask/update           controllers.CourseController.updateHomeTask(id: Long, name: Option[String], startDate: Option[String], finishDate: Option[String], description: Option[String])
 GET        /course/groupleader/add           controllers.CourseController.addGroupLeader(courseId: Long, email: String)
 GET        /course/groupleader/delete        controllers.CourseController.deleteGroupLeader(courseId: Long, email: String)
+
+GET        /hometask/solutions               controllers.HomeTaskSolutionController.homeTaskSolutions(id: Long)

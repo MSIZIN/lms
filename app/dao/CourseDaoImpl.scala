@@ -3,7 +3,6 @@ package dao
 import java.time.LocalDate
 import java.util.UUID
 
-import dao.table.AccountTable._
 import dao.table.EducationInfoTable._
 import dao.table.PersonTable._
 import dao.table.GroupsCoursesTable._
@@ -12,6 +11,7 @@ import dao.table.TeachersCoursesTable._
 import dao.table.GroupLeadersCoursesTable._
 import dao.table.CourseMaterialTable._
 import dao.table.HomeTaskTable._
+import CommonDaoActions._
 import domain.model._
 import javax.inject._
 import play.api.db.{DBApi, Database}
@@ -21,38 +21,11 @@ class CourseDaoImpl @Inject() (dbapi: DBApi) extends CourseDao {
 
   implicit val db: Database = dbapi.database("default")
 
-  override def isStudent(email: Email): Boolean =
-    (
-      for {
-        vercode <- findVerCodeByEmail(email)
-        student <- findStudentByVerCode(vercode)
-      } yield student
-    ) match {
-      case Some(_) => true
-      case None    => false
-    }
+  override def isStudent(email: Email): Boolean = CommonDaoActions.isStudent(email)
 
-  override def isTeacherOfCourse(courseId: Long, email: Email): Boolean =
-    (
-      for {
-        vercode <- findVerCodeByEmail(email)
-        teacherTable <- findTeachersCoursesTablesByCourseId(courseId).find(table => table.teacherId == vercode)
-      } yield teacherTable
-    ) match {
-      case Some(_) => true
-      case None    => false
-    }
+  override def isTeacherOfCourse(courseId: Long, email: Email): Boolean = CommonDaoActions.isTeacherOfCourse(courseId, email)
 
-  override def isStudentOfCourse(courseId: Long, email: Email): Boolean =
-    (
-      for {
-        vercode <- findVerCodeByEmail(email)
-        groupId <- findEducInfoTableByVerCode(vercode).map(_.groupId)
-      } yield findGroupsCoursesTablesByGroupId(groupId)
-    ) match {
-      case Some(groupsCourses) if groupsCourses.exists(_.courseId == courseId) => true
-      case _                                                                   => false
-    }
+  override def isStudentOfCourse(courseId: Long, email: Email): Boolean = CommonDaoActions.isStudentOfCourse(courseId, email)
 
   override def isGroupLeaderOfCourse(courseId: Long, email: Email): Boolean =
     (
@@ -133,17 +106,5 @@ class CourseDaoImpl @Inject() (dbapi: DBApi) extends CourseDao {
 
   override def deleteGroupLeader(courseId: Long, email: Email): Unit =
     deleteGroupLeadersCoursesTableTable(findVerCodeByEmail(email).get, courseId)
-
-  private def findVerCodeByEmail(email: Email): Option[UUID] = findAccountTableByEmail(email).map(_.personVerificationCode)
-
-  private def findStudentByVerCode(verificationCode: UUID): Option[Student] =
-    findPersonTableByVerCode(verificationCode)
-      .filter(_.position == "студент")
-      .map(personTable => Student(personTable.firstName, personTable.lastName, personTable.middleName))
-
-  private def findTeacherByVerCode(verificationCode: UUID): Option[Teacher] =
-    findPersonTableByVerCode(verificationCode)
-      .filter(_.position == "преподаватель")
-      .map(personTable => Teacher(personTable.firstName, personTable.lastName, personTable.middleName))
 
 }

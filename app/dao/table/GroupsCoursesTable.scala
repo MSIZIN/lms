@@ -22,4 +22,9 @@ object GroupsCoursesTable {
       SQL"SELECT * FROM groups_courses WHERE group_id = $groupId".as(groupsCoursesParser.*)
     }
 
+  def findGroupsCoursesTablesByCourseId(courseId: Long)(implicit db: Database): List[GroupsCoursesTable] =
+    db.withConnection { implicit connection =>
+      SQL"SELECT * FROM groups_courses WHERE course_id = $courseId".as(groupsCoursesParser.*)
+    }
+
 }

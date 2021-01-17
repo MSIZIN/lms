@@ -2,10 +2,10 @@ package dao
 
 import java.util.UUID
 
-import dao.table.AccountTable._
 import dao.table.EducationInfoTable._
 import dao.table.EducationalGroupTable._
 import dao.table.PersonTable._
+import dao.CommonDaoActions._
 import domain.model.{EducationInfo, EducationalGroup, Email, Person, Profile, Student}
 import javax.inject._
 import play.api.db.{DBApi, Database}
@@ -39,9 +39,6 @@ class ProfileDaoImpl @Inject() (dbapi: DBApi) extends ProfileDao {
 
   private def findGroupIdByVerCode(verificationCode: UUID): Option[Long] =
     findEducInfoTableByVerCode(verificationCode).map(_.groupId)
-
-  private def findVerCodeByEmail(email: Email): Option[UUID] =
-    findAccountTableByEmail(email).map(_.personVerificationCode)
 
   private def findEducationalGroupById(id: Long): Option[EducationalGroup] =
     findEducGroupTableById(id).map(educGroupTable =>

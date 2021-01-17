@@ -1,6 +1,6 @@
 package domain.service.messages
 
-import domain.model.{Email, SocialNetworkLink, Student}
+import domain.model.{Email, SocialNetworkLink}
 
 final case class ProfileRequest(email: Email)
 

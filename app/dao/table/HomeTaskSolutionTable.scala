@@ -24,4 +24,10 @@ object HomeTaskSolutionTable {
     }
   }
 
+  def findHomeTaskSolutionTable(homeTaskId: Long, studentId: UUID)(implicit db: Database): Option[HomeTaskSolutionTable] =
+    db.withConnection { implicit connection =>
+      SQL"SELECT * FROM home_task_solution where home_task_id = $homeTaskId AND student_id = CAST(${studentId.toString} AS UUID)"
+        .as(homeTaskSolutionTableParser.singleOpt)
+    }
+
 }

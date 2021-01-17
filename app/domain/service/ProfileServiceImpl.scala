@@ -2,12 +2,13 @@ package domain.service
 
 import dao.ProfileDao
 import domain.model._
-import domain.service.ProfileServiceImpl.{decorateAnotherProfile, decorateGroupmates, decorateProfile, isRightLinkFormat, toRussianPhoneFormat}
 import domain.service.messages._
 import javax.inject._
 
 @Singleton
 class ProfileServiceImpl @Inject() (profileDao: ProfileDao) extends ProfileService {
+
+  import ProfileServiceImpl._
 
   override def profile(request: ProfileRequest): ProfileResponse =
     profileDao.findProfileByEmail(request.email) match {
