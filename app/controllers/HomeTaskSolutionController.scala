@@ -23,4 +23,16 @@ class HomeTaskSolutionController @Inject() (
     }
   }
 
+  def updateHomeTaskSolution(id: Long, content: String): Action[AnyContent] = Action { request =>
+    withAuthenticatedUser(request, authService) { creds =>
+      homeTaskSolutionService.updateHomeTaskSol(UpdateHomeTaskSolutionRequest(id, creds.email, content)) match {
+        case UpdateHomeTaskSolutionSuccess => Ok("Решение успешно отправлено")
+        case NotEnoughRightsToUpdateSolution =>
+          BadRequest("Чтобы отправлять решения домашнего задания, нужно быть студентом соотвествующего курса")
+        case HomeTaskIsNotAvailable => BadRequest("Нет доступного домашнего задания с таким id")
+        case DeadlineHasExpired     => BadRequest("Срок сдачи задания истёк")
+      }
+    }
+  }
+
 }

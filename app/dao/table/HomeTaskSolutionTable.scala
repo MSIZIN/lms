@@ -26,8 +26,21 @@ object HomeTaskSolutionTable {
 
   def findHomeTaskSolutionTable(homeTaskId: Long, studentId: UUID)(implicit db: Database): Option[HomeTaskSolutionTable] =
     db.withConnection { implicit connection =>
-      SQL"SELECT * FROM home_task_solution where home_task_id = $homeTaskId AND student_id = CAST(${studentId.toString} AS UUID)"
+      SQL"SELECT * FROM home_task_solution WHERE home_task_id = $homeTaskId AND student_id = CAST(${studentId.toString} AS UUID)"
         .as(homeTaskSolutionTableParser.singleOpt)
+    }
+
+  def insertHomeTaskSolutionTable(homeTaskId: Long, studentId: UUID, content: String)(
+    implicit db: Database
+  ): Boolean =
+    db.withConnection { implicit connection =>
+      SQL"INSERT INTO home_task_solution(home_task_id, student_id, date_of_adding, content) VALUES ($homeTaskId, CAST(${studentId.toString} AS UUID), NOW()::DATE, $content)"
+        .execute()
+    }
+
+  def deleteHomeTaskSolutionTable(homeTaskId: Long, studentId: UUID)(implicit db: Database): Boolean =
+    db.withConnection { implicit connection =>
+      SQL"DELETE FROM home_task_solution WHERE home_task_id = $homeTaskId AND student_id = CAST(${studentId.toString} AS UUID)".execute()
     }
 
 }

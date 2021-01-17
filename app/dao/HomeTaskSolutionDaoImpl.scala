@@ -1,5 +1,7 @@
 package dao
 
+import java.time.LocalDate
+
 import dao.table.EducationInfoTable._
 import dao.table.GroupsCoursesTable._
 import dao.table.HomeTaskSolutionTable._
@@ -17,6 +19,9 @@ class HomeTaskSolutionDaoImpl @Inject() (dbapi: DBApi) extends HomeTaskSolutionD
 
   override def doesHomeTaskBelongToTeacher(homeTaskId: Long, email: Email): Boolean =
     findHomeTaskTableById(homeTaskId).fold(false)(table => isTeacherOfCourse(table.courseId, email))
+
+  override def doesHomeTaskBelongToStudent(homeTaskId: Long, email: Email): Boolean =
+    findHomeTaskTableById(homeTaskId).fold(false)(table => isStudentOfCourse(table.courseId, email))
 
   override def groupsOfHomeTask(homeTaskId: Long): List[EducationalGroup] = {
     val courseId = findHomeTaskTableById(homeTaskId).map(_.courseId).get
@@ -39,5 +44,14 @@ class HomeTaskSolutionDaoImpl @Inject() (dbapi: DBApi) extends HomeTaskSolutionD
     findEducGroupTableById(id).map(educGroupTable =>
       EducationalGroup(educGroupTable.name, educGroupTable.department, educGroupTable.courseNumber)
     )
+
+  override def homeTaskTimeInterval(homeTaskId: Long): Option[(LocalDate, LocalDate)] =
+    findHomeTaskTableById(homeTaskId).map(table => table.startDate -> table.finishDate)
+
+  override def updateHomeTaskSolution(homeTaskId: Long, email: Email, content: String): Unit = {
+    val verCode = findVerCodeByEmail(email).get
+    if (findHomeTaskSolutionTable(homeTaskId, verCode).nonEmpty) deleteHomeTaskSolutionTable(homeTaskId, verCode)
+    insertHomeTaskSolutionTable(homeTaskId, verCode, content)
+  }
 
 }

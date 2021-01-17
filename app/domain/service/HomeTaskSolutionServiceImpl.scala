@@ -22,6 +22,20 @@ class HomeTaskSolutionServiceImpl @Inject() (homeTaskSolutionDao: HomeTaskSoluti
       )
     }
 
+  override def updateHomeTaskSol(request: UpdateHomeTaskSolutionRequest): UpdateHomeTaskSolutionResponse = {
+    val timeInterval = homeTaskSolutionDao.homeTaskTimeInterval(request.homeTaskId)
+    if (!homeTaskSolutionDao.doesHomeTaskBelongToStudent(request.homeTaskId, request.email))
+      NotEnoughRightsToUpdateSolution
+    else if (timeInterval.fold(true)(interval => LocalDate.now().isBefore(interval._1)))
+      HomeTaskIsNotAvailable
+    else if (timeInterval.map(interval => LocalDate.now().isAfter(interval._2)).get)
+      DeadlineHasExpired
+    else {
+      homeTaskSolutionDao.updateHomeTaskSolution(request.homeTaskId, request.email, request.content)
+      UpdateHomeTaskSolutionSuccess
+    }
+  }
+
 }
 object HomeTaskSolutionServiceImpl {
 
