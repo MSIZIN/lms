@@ -26,10 +26,13 @@ class HomeTaskSolutionServiceImpl @Inject() (homeTaskSolutionDao: HomeTaskSoluti
 object HomeTaskSolutionServiceImpl {
 
   private def decorateHomeTaskSolutions(groupsToSolutions: List[(EducationalGroup, List[HomeTaskSolution])]): String =
-    "Прогресс выполнения студентами этого домашнего задания:\n\n\n\n" + groupsToSolutions.sortBy(_._1.name).map {
-      case (group, solutions) =>
-        s"Группа ${group.name}:\n\n" + solutions.map(decorateSolution).mkString("\n\n") + "\n\n"
-    }.mkString("\n\n")
+    "Прогресс выполнения студентами этого домашнего задания:\n\n\n\n" + groupsToSolutions
+      .sortBy(_._1.name)
+      .map {
+        case (group, solutions) =>
+          s"Группа ${group.name}:\n\n" + solutions.map(decorateSolution).mkString("\n\n") + "\n\n"
+      }
+      .mkString("\n\n")
 
   private def decorateSolution(solution: HomeTaskSolution): String =
     s"Студент: ${solution.student.lastName} ${solution.student.firstName} ${solution.student.middleName}\n" +
